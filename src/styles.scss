@@ -1,0 +1,14 @@
+
+div.shadows:hover {box-shadow: .25rem  .25rem .25rem;};
+
+div.price-circle {
+    border-radius: 50%;
+    aspect-ratio: 1;
+    background-color: lightgrey;
+};
+
+div.points-square {
+    background-color: lightgrey;
+};
+
+@import "bootstrap/scss/bootstrap";
