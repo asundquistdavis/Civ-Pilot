@@ -10,7 +10,7 @@ app.config['SECRET_KEY'] = secret_key
 
 bundle = '\\static\\bundle.js'
 
-@app.route('/home')
+@app.route('/')
 def index():
     return render_template('index.html', bundle=bundle)
 
