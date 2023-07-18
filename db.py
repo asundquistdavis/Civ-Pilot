@@ -3,7 +3,8 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship,
 from config import protical, user, password, host, port, database
 from typing import Any, Protocol, List
 from assets import civs, advancement_cards, adv_colors
-from exception import PlayerNotAutherizedError, GamePlayersNotReady, IvalidRequestError
+from exception import PlayerNotAutherizedError, GamePlayersNotReady, IvalidRequestError, GameInProgressError
+from collections import Counter
 
 # set to False for production
 development = True
@@ -14,14 +15,15 @@ production_url = f'{protical}://{user}:{password}@{host}:{port}/{database}'
 url = development_url if development else production_url
 engine = create_engine(url)
 
-def get_or_create(session:Session, Table:type, return_type=False, literal_only:bool=False, **conditions)->Any:
+def get_or_create(session:Session, Table:type, return_type=False, literal_only:bool=False, get_only=False, **conditions)->Any:
     # tuple that holds the target instance and the type literal/copy/new
     instance = None, None
     # if id is provided return the 'literal' instance (same id) if it exists
     if 'id' in conditions.keys(): instance = session.get(Table, conditions['id']), 'literal'
-    if literal_only and not all(instance): return instance
+    if literal_only: return instance if return_type else instance[0]
     # else, return the 'copy' instance (all match all the conditions true) if it exists 
     else: instance = session.query(Table).filter_by(**conditions).first(), 'copy'
+    if get_only: return instance if return_type else instance[0]
     # if no instance found, create the 'new' instance  
     if not all(instance): instance = Table(**conditions), 'new'; session.add(instance[0]); session.commit()
     return instance if return_type else instance[0]
@@ -109,7 +111,7 @@ class AdvCard(Base):
     texts:Mapped[str] = mapped_column(String)
 
     @property
-    def points(self): return self.price//100 + 1
+    def points(self): return 1 if self.price < 100 else 3 if self.price < 200 else 6
 
     # players with the card
     players:Mapped[List['GamePlayer.AdvCards']] = relationship('AdvCards', back_populates='adv_card')
@@ -145,9 +147,8 @@ class GamePlayer(Base):
         adv_card:Mapped[AdvCard] = relationship(AdvCard, back_populates='players')
 
         def __json__(self, parent:str=None)->dict:
-            if parent == 'player': return (player:=json(self.adv_card))
-            if parent =='card': return (card:=json(self.player))
-            return {'player': card, 'advCard': player}
+            if parent=='info': return json(self.adv_card)
+            return (card:=json(self.player))
         
     class AdvCardsSelection(Base):
 
@@ -160,9 +161,8 @@ class GamePlayer(Base):
         adv_card:Mapped[AdvCard] = relationship(AdvCard, back_populates='players_selected')
 
         def __json__(self, parent:str=None)->dict:
-            if parent == 'player': return (player:=json(self.adv_card))
-            if parent =='card': return (card:=json(self.player))
-            return {'player': card, 'advCard': player}
+            if parent=='info': return json(self.adv_card)
+            return (card:=json(self.player))
 
     __tablename__ = 'gameplayer'
     # unique instance for each game/player combo
@@ -172,14 +172,15 @@ class GamePlayer(Base):
     game_info:Mapped['Game'] = relationship('Game', back_populates='players', uselist=False)
     # all the player's info for specific game
     civ:Mapped[str] = mapped_column(String, nullable=True)
-    adv_cards:Mapped[List[AdvCards]] = relationship(AdvCards, back_populates='player')
-    adv_cards_selection:Mapped[List[AdvCardsSelection]] = relationship(AdvCardsSelection, back_populates='player')
-    selection_ready:Mapped[bool] = mapped_column(Boolean, default=False)
-    cities:Mapped[int] = mapped_column(Integer, default=0)
+    adv_cards:Mapped[List[AdvCards]] = relationship(AdvCards, back_populates='player', cascade='all, delete-orphan')
+    adv_cards_selection:Mapped[List[AdvCardsSelection]] = relationship(AdvCardsSelection, back_populates='player', cascade='all, delete-orphan')
     ast_score:Mapped[int] = mapped_column(Integer, default=0)
+    credits:Mapped[dict] = mapped_column(JSON, default={'blue':0, 'yellow':0, 'orange':0, 'green':0, 'red':0})
     # player state variables
+    selection_ready:Mapped[bool] = mapped_column(Boolean, default=False)
     has_purchased:Mapped[bool] = mapped_column(Boolean, default=False)
     can_advance:Mapped[bool] = mapped_column(Boolean, default=True)
+
     # player properties
     @property
     def is_host(self): return self.player_info.hosted_game == self.game_info if self.player_info else None
@@ -188,8 +189,7 @@ class GamePlayer(Base):
     def score(self)->int:
         cards_score = sum(card.adv_card.points for card in self.adv_cards)
         ast_score = self.ast_score
-        cities_score = self.cities * 5
-        total_score = cards_score + ast_score + cities_score
+        total_score = cards_score + ast_score
         return total_score
     @property
     def civ_info(self)->dict: return next(filter(lambda civ: civ['name']==self.civ, civs)) if self.civ else None
@@ -200,7 +200,6 @@ class GamePlayer(Base):
 
     def remove(self, session:Session):
         self.player_info.game_id = None
-        players = self.game_info.players.remove(self)
         session.delete(self)
         session.commit()
 
@@ -210,15 +209,17 @@ class GamePlayer(Base):
             'id': self.player_info.id,
             'username': self.player_info.username,
             'isHost': self.is_host,
-            'advCards': [json(card) for card in self.adv_cards],
-            'advCardsSelection': [json(card) for card in self.adv_cards_selection],
+            'advCards': [json(card, parent='info') for card in self.adv_cards],
+            'advCardsSelection': [json(card, parent='info') for card in self.adv_cards_selection],
             'civ': self.civ,
             'color': self.pcolor,
             'astOrder': self.ast_order,
             'score': self.score,
             'hasPurchased': self.has_purchased,
             'canAdvance': self.can_advance,
-            'selectionReady': self.selection_ready
+            'selectionReady': self.selection_ready,
+            'credits': self.credits
+
         }
         game = {
             'id': self.player_info.id if self.player_info else None,
@@ -280,10 +281,10 @@ class Player(Base):
 
     # adds player to existing game
     def join_game(self, session:Session, data:dict)->'Game':
-        print(data)
         if not 'gameId' in data.keys(): raise IvalidRequestError
+        game:Game = get_or_create(session, Game, id=data['gameId'], literal_only=True)
+        if game.turn_number: raise GameInProgressError
         if self.game: self.game.remove(session)
-        game:Game = get_or_create(session, Game, id=data['gameId'])
         playergame = GamePlayer(game_id=data['gameId'])
         self.game_id = playergame.id
         playergame.player_info = self
@@ -305,6 +306,44 @@ class Player(Base):
         session.add(playergame)
         session.commit()
         return game
+    
+    def select_card(self, session:Session, cardId):
+        if any(card.adv_card_id==cardId for card in self.game.adv_cards): return False
+        self.game.adv_cards_selection.append(GamePlayer.AdvCardsSelection(player_id=self.game.id, adv_card_id=cardId))
+        session.add(self)
+        session.commit()
+
+    def deselect_card(self, session:Session, cardId):
+        card = get_or_create(session, GamePlayer.AdvCardsSelection, adv_card_id=cardId, player_id=self.game.id, get_only=True)
+        if not card: return False
+        self.game.adv_cards_selection.remove(card)
+        session.add(self)
+        session.delete(card)
+        session.commit()
+        return True
+
+    def add_cards(self, session:Session):
+        session.add(self)
+        for cardselected in self.game.adv_cards_selection:
+            if any(cardselected.adv_card_id==card.adv_card_id for card in self.game.adv_cards): print(f'skipping {cardselected.adv_card}'); continue
+            cardrel = GamePlayer.AdvCards(player_id=self.game.id, adv_card_id=cardselected.adv_card_id)
+            self.game.adv_cards.append(cardrel)
+            session.commit()
+            card = cardrel.adv_card
+            credits_on_card = Counter({'blue': card.credits.blue, 'yellow': card.credits.yellow, 'green': card.credits.green, 'red': card.credits.red, 'orange': card.credits.orange})
+            self.game.credits = {'blue':0, 'yellow':0, 'orange':0, 'green':0, 'red':0, **{item: key for item, key in (credits_on_card + Counter(self.game.credits)).items()}}
+            self.game.has_purchased = True
+        self.game.adv_cards_selection = []
+        session.commit()
+        return True
+
+    def remove_card(self, session:Session, cardId):
+        session.add(self)
+        adv_cards = [card for card in self.game.adv_cards if card.adv_card_id==cardId]
+        adv_card = adv_cards[0] if adv_cards else None
+        if adv_card: self.game.adv_cards.remove(adv_card)
+        session.commit()
+        return True
 
     def __json__(self, parent:str=None):
         if parent=='info': return {
@@ -345,6 +384,15 @@ class Game(Base):
         session.delete(self)
         session.commit()
 
+    def end_turn(self, session:Session, data):
+        for player in self.players:
+            player.ast_score += 5 if player.can_advance else 0
+            player.can_advance = True
+            player.selection_ready = False
+            player.has_purchased = False
+        self.turn_number += 1
+        session.commit()
+
     @property
     def all_players_have_civ(self)->bool:
         return all(bool(player.civ) for player in self.players)
@@ -374,5 +422,4 @@ class Game(Base):
 if __name__ == '__main__':
     Base.metadata.create_all(engine)
     with Session(engine) as session:
-        # AdvCard.create_all(session, advancement_cards)
-        print(AdvCard.all(session))
+        AdvCard.create_all(session, advancement_cards)

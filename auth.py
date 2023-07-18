@@ -36,7 +36,7 @@ def get_new_player(session:Session, key:str, data:dict)->dict:
     if not 'token' in data.keys(): raise InvalidCredentialsError
     player_id = decode(jwt=data['token'], key=key, algorithms=["HS256"])['user_id']
     player:Player = get_or_create(session, Player, id=player_id, literal_only=True)
-    if not player: return InvalidCredentialsError
+    if not player: raise InvalidCredentialsError
     return player 
 
 def get_valid_player(session:Session, key:str, data:dict)->Player:

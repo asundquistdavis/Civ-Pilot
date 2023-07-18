@@ -1,8 +1,8 @@
 from flask import Flask, render_template, jsonify, request
-from db import Session, Player, engine, Game, json, get_or_create, AdvCard
+from db import Session, Player, engine, Game, json, get_or_create, AdvCard, GamePlayer
 from config import secret_key
 from auth import  validate_login, validate_register, authenticate_user, authorize_user, get_new_player, get_valid_player
-from exception import AuthError, PlayerNotFoundError,PlayerNotAutherizedError
+from exception import AuthError, PlayerNotFoundError, PlayerNotAutherizedError
 from assets import civs
 
 app = Flask(__name__)
@@ -76,14 +76,21 @@ def game_action():
                 session.commit()
                 return jsonify({'game': json(game, parent='info')}) 
             targetPlayer:Player = get_or_create(session, Player, id=data['targetPlayerId'], literal_only=True)
+            if not targetPlayer: raise PlayerNotFoundError
+            if not ((targetPlayer.id == requestingPlayer.id) or (requestingPlayer.game.is_host)): raise PlayerNotAutherizedError
             if type=='civilization':
-                if not targetPlayer: raise PlayerNotFoundError
-                if (targetPlayer.id == requestingPlayer.id) or (requestingPlayer.game.is_host and (targetPlayer.game.game_info.id == requestingPlayer.hosted_game.id)): 
-                    targetPlayer.game.civ = data['civilization'] if data['civilization'] else None
-                    session.add(targetPlayer)
-                    session.commit()
-                    game:Game = requestingPlayer.game.game_info
-                    return jsonify({'game': json(game, parent='info')})
+                targetPlayer.game.civ = data['civilization'] if data['civilization'] else None
+                session.add(targetPlayer)
+                session.commit()
+            if type=='advCardSelect':
+                if not targetPlayer.deselect_card(session, data['advCardId']): targetPlayer.select_card(session, data['advCardId'])
+            if type=='advCardPurchase' and requestingPlayer.game.is_host: targetPlayer.add_cards(session)
+            if type=='advCardPurchase': targetPlayer.game.selection_ready = True; session.add(targetPlayer); session.commit()
+            if type=='advCardRemove' and requestingPlayer.game.is_host: targetPlayer.remove_card(session, data['advCardId'])
+            if type=='playerAdvance': targetPlayer.game.can_advance = not targetPlayer.game.can_advance; session.add(targetPlayer); session.commit()
+            if type=='endTurn' and requestingPlayer.game.is_host: requestingPlayer.game.game_info.end_turn(session, data)
+            game:Game = requestingPlayer.game.game_info
+            return jsonify({'game': json(game, parent='info')})           
     except AuthError as error: return jsonify(error.dict()), error.STATUS_CODE
     
 @app.route('/api/civilizations')

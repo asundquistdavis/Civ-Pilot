@@ -1,10 +1,8 @@
-import React, { useEffect, useState, use } from "react";
+import React, { useEffect, useState } from "react";
 import Auth from "./Auth";
 import NewGame from "./NewGame";
 import PlayGame from "./PlayGame";
 import axios from "axios";
-import { param } from "jquery";
-import { compileString } from "sass";
 
 const App = () => {
 
@@ -17,7 +15,10 @@ const App = () => {
         viewingMode: 'board',
         sortMode: 'player',
         sortAcs: false,
-        isFilterOn: false,
+        filterColor: {green: false, blue: false, orange: false, yellow: false, red: false},
+        viewingCard: null,
+        alert: null,
+        query: '',
     });
 
     // client data
@@ -49,9 +50,10 @@ const App = () => {
             axios.post('/api/player', {token: token})
             .then(response=>setPlayer(response.data.player))
             .catch(error=>{
-                setCD({...cd, errorMessage: error.response.data.message});
-                if (cd.errorMessage === 'invalid credentials') {
-                    localStorage.clear()
+                const message = error.response.data.message;
+                console.log(message);
+                if (message === 'invalid credentials') {
+                    localStorage.clear();
                     setToken(null);
                 };
             });
@@ -73,7 +75,10 @@ const App = () => {
     const getCivilizations = () => {
         axios.get('api/civilizations')
         .then(response=>setCivilizations(response.data.civilizations))
-        .catch(error=>setCD({...cd, errorMessage: error.response.data.message}));
+        .catch(error=>{
+            const message = error.response.data.message;
+            setCD({...cd, errorMessage: message})
+        });
     };
 
     const getAdvCards = () => {
@@ -83,7 +88,10 @@ const App = () => {
     };
 
     useEffect(()=>{
+        const localToken = localStorage.getItem(token);
+        if (localToken) {setToken(localToken)};
         getPlayerInfo();
+        // if (token===null) {setCD({...cd, errorMessage: null})};
     }, [token]);
 
     useEffect(()=>{
@@ -93,14 +101,14 @@ const App = () => {
     useEffect(()=>{
         getAdvCards();
         getCivilizations();
+        setState({...state, viewingPlayer: game?.players?.filter(player=>player.id===state?.viewingPlayer?.id)[0]})
     }, [game]);
 
     useEffect(()=>{
         if (cd.hostName) {
             getUsernames()
-            const targetHost = usernames.filter(user=>user.username===cd.hostName).length>0
-            console.log(targetHost)
-            targetHost? setState({...state, isValidGame: true}):null;
+            const validGameId = usernames.filter(user=>user.username===cd.hostName)?.[0]?.hostedGameId
+            setState({...state, validGameId});
         }
     }, [cd.hostName]);
 
@@ -108,7 +116,23 @@ const App = () => {
     
         return (<div>Loading...</div>)};
     
-    const Error = () => {return (<div>Something went wrong</div>)};
+    const Error = () => {return (<><div>Something went wrong</div>{cd.errorMessage? <div>{cd.errorMessage}</div>:null}</>)};
+
+    const Alert = () => {
+        return (
+            <div className="alert-screen">
+                <div className="row my-5">
+                    <div className="col-8 col-sm-4 mx-auto bg-light p-3 border border-dark rounded">
+                        <div className="row text-center mb-2">{state.alert.message}</div>
+                        <div className="row d-flex flex-row justify-content-center">
+                            <div className="col px-0 text-center"><button className="btn btn-danger" onClick={state.alert.action}>{state.alert.actionMessage}</button></div>
+                            <div className="col px-0 text-center"><button className="btn btn-secondary" onClick={()=>setState({...state, alert:null})}>Back</button></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    };
 
     return (
         <div className="container mt-3">
@@ -118,11 +142,14 @@ const App = () => {
                         Auth(state, token, cd, setState, setToken, setCD)
                     :(player && (!game || (game && !game.turnNumber)))?
                         NewGame(state, token, cd, player, game, civilizations, advCards, setState, setToken, setCD, setPlayer, setGame, setCivilizations, setAdvCards, usernames, setUsernames)
-                    :(game && game.turnNumber)?
+                    :(player && game && game.turnNumber)?
                         PlayGame(state, token, cd, player, game, civilizations, advCards, setState, setToken, setCD, setPlayer, setGame, setCivilizations, setAdvCards)
-                    :Error()}
+                    :cd.errorMessage?
+                        Error():
+                    Loading()}
                 </div>
             </div>
+            {state.alert? Alert():null}
         </div>
     );
 };

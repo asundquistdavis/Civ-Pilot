@@ -15,7 +15,7 @@ class NoSuchUserError(Exception):
     def dict(self)->dict: return {'message': 'no such user'}
 
 class InvalidCredentialsError(Exception):
-    STATUS_CODE = 401
+    STATUS_CODE = 400
     def dict(self)->dict: return {'message': 'invalid credentials'}
 
 class PlayerNotAutherizedError(Exception):
@@ -34,4 +34,8 @@ class IvalidRequestError(Exception):
     STATUS_CODE = 400
     def dict(self)->dict: return {'message': 'required param missing from request'}
 
-AuthError = (IncompleteInputError, PasswordDoesNotMatchError, UserNameTakenError, InvalidCredentialsError, NoSuchUserError, PlayerNotAutherizedError, PlayerNotFoundError, GamePlayersNotReady, IvalidRequestError)
+class GameInProgressError(Exception):
+    STATUS_CODE = 400
+    def dict(self)->dict: return {'message': 'game is already in progress'}
+
+AuthError = (IncompleteInputError, PasswordDoesNotMatchError, UserNameTakenError, InvalidCredentialsError, NoSuchUserError, PlayerNotAutherizedError, PlayerNotFoundError, GamePlayersNotReady, IvalidRequestError, GameInProgressError)
