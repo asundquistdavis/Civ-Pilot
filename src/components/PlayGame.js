@@ -105,7 +105,7 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
         const text = <>{MainText}{CatTexts()}</>;
        
         return(
-        <div className="col-6 col-sm-4 col-xl-3 mb-2" key={key}>
+        <div className="col-6 col-sm-4 col-xl-3 p-1 m-0" key={key}>
             <div className={'adv-card '+(cardIsOwned? 'owned-card-border': cardIsSelected? 'selected-card-border': 'default-card-border')}  onClick={()=>state.viewingMode==='browser'? handleCardSelected(card): handleCardRemove(card)}>
                 
                 {/* top half */}
@@ -314,55 +314,69 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
         const numberOfSelected = state.viewingPlayer.advCardsSelection.length
 
         return (<div>
-            <h5 className="mb-3">{isServerHost? <button className="btn btn-primary me-1" onClick={handlePurchaseSubmit}>Approve &#9989;</button>:null}{numberOfSelected>0? 'Seleted ' + numberOfSelected + ' card' + (numberOfSelected>1? 's': '') + ' for a price of ' + cartPrice: 'Select cards to add to cart'}</h5>
-            <div className="row flex-sm-row-reverse flex-row mb-2 justify-content-between align-items-bottom">
-            <div className="col-12 col-md-6 mb-2 mb-md-0">
-                    <div className="row flex-row justify-content-end">
-                        <div className="credit-filter blue p-0 me-2">
-                            <label  htmlFor="filter-blue">
-                                <input type="checkbox" id="filter-blue" checked={state.filterColor.blue} onChange={()=>setState({...state, filterColor: {...state.filterColor, blue: !state.filterColor.blue}})}/>
-                                <span>{state.viewingPlayer.credits.blue}</span>
-                            </label>
+            <h5 className="mb-3 mx-1">{isServerHost? <button className="btn btn-primary me-1" onClick={handlePurchaseSubmit}>Approve &#9989;</button>:null}</h5>
+            <nav class="navbar sticky-top navbar-light bg-light border-dark border-bottom">
+                <div className="row flex-sm-row-reverse flex-row mb-1 align-items-bottom w-100 mx-1">
+                    <div className="col-12 col-md-6 mb-2 mb-md-0">
+                        <div className="row flex-row justify-content-between mx-1">
+                            <div className="col-4 col-md-2 p-0 d-md-none">
+                                <div className="row flex-row align-items-center">
+                                    <div className="price-circle">{cartPrice}</div>
+                                    <div className="col p-0 m-0 text-start">{capitalize(state.viewingPlayer.username)}'s Cart</div>
+                                </div>
+                            </div>
+                            <div className="col-7 col-md-10 p-0">
+                                <div className="row flex-row justify-content-end">
+                                    {/* blue toggle */}
+                                    <div className="credit-filter blue p-0 me-1">
+                                        <label  htmlFor="filter-blue">
+                                            <input type="checkbox" id="filter-blue" checked={state.filterColor.blue} onChange={()=>setState({...state, filterColor: {...state.filterColor, blue: !state.filterColor.blue}})}/>
+                                            <span>{state.viewingPlayer.credits.blue}</span>
+                                        </label>
+                                    </div>
+                                    {/* red toggle */}
+                                    <div className="credit-filter red p-0 me-1 me-md-1">
+                                        <label htmlFor="filter-red">
+                                            <input type="checkbox" id="filter-red" checked={state.filterColor.red} onChange={()=>setState({...state, filterColor: {...state.filterColor, red: !state.filterColor.red}})}/>
+                                            <span>{state.viewingPlayer.credits.red}</span>
+                                        </label>
+                                    </div>
+                                    <div className="credit-filter green p-0 me-1 me-md-1">
+                                        <label htmlFor="filter-green">
+                                            <input type="checkbox" id="filter-green" checked={state.filterColor.green} onChange={()=>setState({...state, filterColor: {...state.filterColor, green: !state.filterColor.green}})}/>
+                                            <span>{state.viewingPlayer.credits.green}</span>
+                                        </label>
+                                    </div>
+                                    <div className="credit-filter yellow p-0 me-1 me-md-1">
+                                        <label htmlFor="filter-yellow">
+                                            <input type="checkbox" id="filter-yellow" checked={state.filterColor.yellow} onChange={()=>setState({...state, filterColor: {...state.filterColor, yellow: !state.filterColor.yellow}})}/>
+                                            <span>{state.viewingPlayer.credits.yellow}</span>
+                                        </label>
+                                    </div>
+                                    <div className="credit-filter orange p-0 me-1 me-md-1">
+                                        <label htmlFor="filter-orange">
+                                            <input type="checkbox" id="filter-orange" checked={state.filterColor.oragne} onChange={()=>setState({...state, filterColor: {...state.filterColor, orange: !state.filterColor.orange}})}/>
+                                            <span>{state.viewingPlayer.credits.orange}</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div className="credit-filter red p-0 me-2">
-                            <label htmlFor="filter-red">
-                                <input type="checkbox" id="filter-red" checked={state.filterColor.red} onChange={()=>setState({...state, filterColor: {...state.filterColor, red: !state.filterColor.red}})}/>
-                                <span>{state.viewingPlayer.credits.red}</span>
-                            </label>
-                        </div>
-                        <div className="credit-filter green p-0 me-2">
-                            <label htmlFor="filter-green">
-                                <input type="checkbox" id="filter-green" checked={state.filterColor.green} onChange={()=>setState({...state, filterColor: {...state.filterColor, green: !state.filterColor.green}})}/>
-                                <span>{state.viewingPlayer.credits.green}</span>
-                            </label>
-                        </div>
-                        <div className="credit-filter yellow p-0 me-2">
-                            <label htmlFor="filter-yellow">
-                                <input type="checkbox" id="filter-yellow" checked={state.filterColor.yellow} onChange={()=>setState({...state, filterColor: {...state.filterColor, yellow: !state.filterColor.yellow}})}/>
-                                <span>{state.viewingPlayer.credits.yellow}</span>
-                            </label>
-                        </div>
-                        <div className="credit-filter orange p-0 me-2">
-                            <label htmlFor="filter-orange">
-                                <input type="checkbox" id="filter-orange" checked={state.filterColor.oragne} onChange={()=>setState({...state, filterColor: {...state.filterColor, orange: !state.filterColor.orange}})}/>
-                                <span>{state.viewingPlayer.credits.orange}</span>
-                            </label>
+                    </div>
+                    <div className="col-12 col-md-6 p-0">
+                        <div className="input-group">
+                            <input className="form-control form-control-sm" type="text" id="query" placeholder="Seach for Card" value={state.query} onChange={handleQueryChange}></input>
+                            <span className="input-group-text">Sort By: </span>
+                            <input type="radio" className=" btn-check" name="btnradio" id="sort-by-name"autoComplete="off" checked={state.sortMode==='name'} onChange={()=>changeSortMode('name')}/>
+                            <label className="btn btn-secondary" htmlFor="sort-by-name">Name</label>
+                            <input type="radio" className=" btn-check" name="btnradio" id="sort-by-price" autoComplete="off" checked={state.sortMode==='price'} onChange={()=>changeSortMode('price')}/>
+                            <label className="btn btn-secondary" htmlFor="sort-by-price">Price</label>
                         </div>
                     </div>
                 </div>
-                <div className="col-12 col-md-6">
-                    <div className="input-group">
-                        <input className="form-control form-control-sm" type="text" id="query" placeholder="Seach for Card" value={state.query} onChange={handleQueryChange}></input>
-                        <span className="input-group-text">Sort By: </span>
-                        <input type="radio" className=" btn-check" name="btnradio" id="sort-by-name"autoComplete="off" checked={state.sortMode==='name'} onChange={()=>changeSortMode('name')}/>
-                        <label className="btn btn-secondary" htmlFor="sort-by-name">Name</label>
-                        <input type="radio" className=" btn-check" name="btnradio" id="sort-by-price" autoComplete="off" checked={state.sortMode==='price'} onChange={()=>changeSortMode('price')}/>
-                        <label className="btn btn-secondary" htmlFor="sort-by-price">Price</label>
-                    </div>
-                </div>
-            </div>
-            <div>
-                <div className="row">{advCardsSortedByStatus.map(CivCard)}</div>
+            </nav>
+            <div>  
+                <div className="row mx-1">{advCardsSortedByStatus.map(CivCard)}</div>
             </div>
         </div>)
 
@@ -391,7 +405,7 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
     };
 
     return (<div className="d-flex flex-column">
-        <div className="row d-flex justify-content-between mt-3 align-items-center">
+        <div className="row d-flex justify-content-between mt-3 mx-1 align-items-center">
             <div className="col-3 d-flex flex-no-wrap justify-conent-start">
                 {state.viewingPlayer? 
                 // back to scoreboard
