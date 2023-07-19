@@ -143,7 +143,7 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
                         <div className="text-wrapper">{text}</div>
 
                         {/* credit to */}
-                        <div className="credit-to">{card.creditTo? card.creditTo.amount + ' to ' + capitalize(card.creditTo.name): null}</div>
+                        <div className="credit-to">{card.creditTo? card.creditTo.amount + ' to ' + title(card.creditTo.name): null}</div>
                     </div>
                 </div>
             </div>
@@ -161,7 +161,7 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
                 const civName = player.civ.toUpperCase(); 
                 const otherCivame = otherPlayer.civ.toUpperCase();
                 return (civName > otherCivame)? (state.sortAcs? -1: 1): (otherCivame > civName)? (state.sortAcs? 1: -1): 0}):
-            state.sortMode==='score'? [...game.players].sort((player, otherPlayer)=>{state.sortAcs? player.score-otherPlayer.score: otherPlayer.score-player.score}):
+            state.sortMode==='score'? [...game.players].sort((player, otherPlayer)=>{return state.sortAcs? player.score-otherPlayer.score: otherPlayer.score-player.score}):
             game.players);
 
         const handlePlayerSelect = (playerRow) => {setState({...state, viewingPlayer: playerRow, viewingMode: 'card'})};
@@ -171,38 +171,11 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
                 type: 'playerAdvance',
                 playerId: player.id,
                 token,
-                targetPlayerId: playerRow.id
+                targetPlayerId: playerRow.id,
+                gameId: game.id
             };
             axios.post('/api/gameaction', data)
             .then(response=>{setGame(response.data.game)});
-        };
-
-        const renderPlayerRow = (playerRow, key) => {
-
-            const playerIsHost = playerRow.isHost;
-            const playerHasSelection = playerRow.advCardsSelection.length>0;
-            const playerIsReady = playerRow.selectionReady;
-            const symbols = [playerIsHost? '\u2B50': null, playerIsReady? '\u2705': null];
-            const civStyle = {backgroundColor: playerRow.color}
-    
-            return (
-               <tr key={key}>
-                    <td>{symbols.join(' ')}</td>
-                    <td><button className="btn" onClick={()=>handlePlayerSelect(playerRow)}>{capitalize(playerRow.username)}</button></td>
-                    <td style={civStyle}>{capitalize(playerRow.civ)}</td>
-                    <td>{playerRow.score}</td>
-                    {isServerHost?
-                    <td><input type="checkbox" onChange={()=>handleCanAdvanceCheck(playerRow)} checked={playerRow.canAdvance}></input></td>
-                    :null}
-                </tr>
-            );
-        };
-
-        const handleSortFor = (targetMode) => {
-            const mode = state.sortMode;
-            const acsending = state.sortAcs
-            if (targetMode===mode) {setState({...state, sortMode: mode, sortAcs: !acsending})}
-            else {setState({...state, sortMode: targetMode, sortAcs: false})};
         };
 
         const handleEndTurn = () => {
@@ -217,6 +190,37 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
                 axios.post('/api/gameaction', data)
                 .then(response=>{setGame(response.data.game)});
             };
+        };
+
+        const renderPlayerRow = (playerRow, key) => {
+
+            const playerIsHost = playerRow.isHost;
+            const playerHasSelection = playerRow.advCardsSelection.length>0;
+            const playerIsReady = playerRow.selectionReady;
+            const symbols = [playerIsHost? '\u2B50': null, playerIsReady? '\u2705': null];
+            const civStyle = {backgroundColor: playerRow.color}
+            const inputId = `can-advance-${playerRow.id}`;
+    
+            return (
+               <tr key={key}>
+                    <td>{symbols.join(' ')}</td>
+                    <td><button className="btn btn-sm btn-primary" onClick={()=>handlePlayerSelect(playerRow)}>{capitalize(playerRow.username)}</button></td>
+                    <td className="py-3" style={civStyle}>{capitalize(playerRow.civ)}</td>
+                    <td><div className="score-advance p-0 mx-auto">
+                        <label htmlFor={inputId}>
+                            <input type="checkbox" id={inputId} onChange={()=>handleCanAdvanceCheck(playerRow)} checked={playerRow.canAdvance}/>
+                            <span>{playerRow.score}</span>
+                        </label>
+                    </div></td>
+                </tr>
+            );
+        };
+
+        const handleSortFor = (targetMode) => {
+            const mode = state.sortMode;
+            const acsending = state.sortAcs
+            if (targetMode===mode) {setState({...state, sortMode: mode, sortAcs: !acsending})}
+            else {setState({...state, sortMode: targetMode, sortAcs: false})};
         };
 
         const renderArrowDown = () => {return(<svg width="12" height="12" fill="currentColor" className="bi bi-caret-down-square" viewBox="0 0 16 16">
@@ -248,9 +252,6 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
                             <th scope="col"></th><th scope="col">Player{renderSortFor('player')}</th>
                             <th scope="col">Civilization{renderSortFor('civilization')}</th>
                             <th scope="col">Score{renderSortFor('score')}</th>
-                            {isServerHost?<>
-                            <td scope="col">Can Advance</td>
-                            </>:null}
                         </tr></thead>
                         <tbody>{sortedPlayers.map(renderPlayerRow)}</tbody>
                     </table>
@@ -319,31 +320,31 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
                     <div className="row flex-row justify-content-end">
                         <div className="credit-filter blue p-0 me-2">
                             <label  htmlFor="filter-blue">
-                                <input type="checkbox" id="filter-blue" checked={state.filterColor.blue} onChange={(event)=>setState({...state, filterColor: {...state.filterColor, blue: !state.filterColor.blue}})}/>
+                                <input type="checkbox" id="filter-blue" checked={state.filterColor.blue} onChange={()=>setState({...state, filterColor: {...state.filterColor, blue: !state.filterColor.blue}})}/>
                                 <span>{state.viewingPlayer.credits.blue}</span>
                             </label>
                         </div>
                         <div className="credit-filter red p-0 me-2">
                             <label htmlFor="filter-red">
-                                <input type="checkbox" id="filter-red" checked={state.filterColor.red} onChange={(event)=>setState({...state, filterColor: {...state.filterColor, red: !state.filterColor.red}})}/>
+                                <input type="checkbox" id="filter-red" checked={state.filterColor.red} onChange={()=>setState({...state, filterColor: {...state.filterColor, red: !state.filterColor.red}})}/>
                                 <span>{state.viewingPlayer.credits.red}</span>
                             </label>
                         </div>
                         <div className="credit-filter green p-0 me-2">
                             <label htmlFor="filter-green">
-                                <input type="checkbox" id="filter-green" checked={state.filterColor.green} onChange={(event)=>setState({...state, filterColor: {...state.filterColor, green: !state.filterColor.green}})}/>
+                                <input type="checkbox" id="filter-green" checked={state.filterColor.green} onChange={()=>setState({...state, filterColor: {...state.filterColor, green: !state.filterColor.green}})}/>
                                 <span>{state.viewingPlayer.credits.green}</span>
                             </label>
                         </div>
                         <div className="credit-filter yellow p-0 me-2">
-                            <label htmlFor="filter-yellow" checked={state.filterColor.yellow} onChange={(event)=>setState({...state, filterColor: {...state.filterColor, yellow: !state.filterColor.yellow}})}>
-                                <input type="checkbox" id="filter-yellow"/>
+                            <label htmlFor="filter-yellow">
+                                <input type="checkbox" id="filter-yellow" checked={state.filterColor.yellow} onChange={()=>setState({...state, filterColor: {...state.filterColor, yellow: !state.filterColor.yellow}})}/>
                                 <span>{state.viewingPlayer.credits.yellow}</span>
                             </label>
                         </div>
                         <div className="credit-filter orange p-0 me-2">
-                            <label htmlFor="filter-orange" checked={state.filterColor.oragne} onChange={(event)=>setState({...state, filterColor: {...state.filterColor, orange: !state.filterColor.orange}})}>
-                                <input type="checkbox" id="filter-orange"/>
+                            <label htmlFor="filter-orange">
+                                <input type="checkbox" id="filter-orange" checked={state.filterColor.oragne} onChange={()=>setState({...state, filterColor: {...state.filterColor, orange: !state.filterColor.orange}})}/>
                                 <span>{state.viewingPlayer.credits.orange}</span>
                             </label>
                         </div>

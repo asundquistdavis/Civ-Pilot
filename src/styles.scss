@@ -5,6 +5,10 @@ $red: #ec232e;
 $blue: #0070b5;
 $green: #40b24c;
 
+div.my-vh-100 {
+    height: 100svh;
+};
+
 div.top-row {
     display: flex;
     justify-content: space-between;
@@ -121,6 +125,7 @@ div.card-title {
     border: solid 1px black;
     padding: 2px;
     font-weight: 500;
+    hyphens: auto;
 };
 
 div.owned-tag {
@@ -158,6 +163,10 @@ div.text-wrapper {
 
 span.text {
     height: 100%;
+};
+
+div.credit-to {
+    hyphens: auto;
 };
 
 div.modal-card {
@@ -207,13 +216,13 @@ div.credit-filter label span {
     display: block;
 };
 
-.credit-filter label input {
+div.credit-filter label input {
     display: none;
     position: absolute;
     color: #fff;
 };
 
-div label input:checked + span{
+div.credit-filter label input:checked + span{
     border: solid black 1px;
     box-shadow: 0 0 5px 5px yellow;
 };
@@ -238,6 +247,37 @@ div label input:checked + span{
     background-color: $green;
 };
 
+
+div.score-advance {
+    width: fit-content;
+};
+
+div.score-advance label span {
+    border: solid black 2px;
+    height: 35px;
+    width: 35px;
+    margin: 0;
+    text-align: center;
+    display: block;
+    background-color: #f5f8f9;
+    color: #eabb34;
+    font-weight: bold;
+    font-size: 1.5rem;
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: black;
+};
+
+.score-advance label input {
+    display: none;
+    position: absolute;
+    color: #fff;
+};
+
+div.score-advance label input:checked + span {
+    box-shadow: 0 0 15px gold;
+    background-color: #ede9dd
+};
+
 div.alert-screen {
     position: fixed;
     z-index: 100;
@@ -248,5 +288,11 @@ div.alert-screen {
     height: 100%;
     background-color: rgba(0,0,0,0.2)
 };
+
+@media screen and (min-width: 768px) {
+    div.my-vh-100 {
+      height: auto;
+    };
+;}
 
 @import "bootstrap/scss/bootstrap";
