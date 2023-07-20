@@ -341,6 +341,10 @@ class Player(Base):
         session.add(self)
         adv_cards = [card for card in self.game.adv_cards if card.adv_card_id==cardId]
         adv_card = adv_cards[0] if adv_cards else None
+        card:AdvCard = adv_card.adv_card
+        credits_on_card = Counter({'blue': card.credits.blue, 'yellow': card.credits.yellow, 'green': card.credits.green, 'red': card.credits.red, 'orange': card.credits.orange})
+        self.game.credits = {group: current_credit - credits_on_card[group] for group, current_credit in self.game.credits.items()}
+        print({group: current_credit - credits_on_card[group] for group, current_credit in self.game.credits.items()})
         if adv_card: self.game.adv_cards.remove(adv_card)
         session.commit()
         return True
