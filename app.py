@@ -87,6 +87,7 @@ def game_action():
             if type=='advCardPurchase' and requestingPlayer.game.is_host: targetPlayer.add_cards(session)
             if type=='advCardPurchase': targetPlayer.game.selection_ready = True; session.add(targetPlayer); session.commit()
             if type=='advCardRemove' and requestingPlayer.game.is_host: targetPlayer.remove_card(session, data['advCardId'])
+            if type=='creditChange' and requestingPlayer.game.is_host: targetPlayer.change_credits(session, data['credits'])
             if type=='playerAdvance': targetPlayer.game.can_advance = not targetPlayer.game.can_advance; session.add(targetPlayer); session.commit()
             if type=='endTurn' and requestingPlayer.game.is_host: requestingPlayer.game.game_info.end_turn(session, data)
             game:Game = requestingPlayer.game.game_info

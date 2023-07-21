@@ -44,30 +44,37 @@ const Auth = (state, token, cd, setState, setToken, setCD) => {
         getToken();
     };
 
-    const Login = () => {return(<div className="d-flex flex-column h-100">
+    const Login = () => {return(<div className="d-flex flex-column col-12">
 
-        {/* header + create new buttom */}
-        <div className="row d-flex justify-content-between mt-3">
-            <div className="col-3 d-flex justify-content-start">
+        {/* new user button  -> register / header */}
+        <div className="row d-flex justify-content-between mt-3 p-0">
+            <div className="ps-4 col-3 p-0 d-flex flex-row justify-content-start">
+                {/* new user */}
                 <button className="btn btn-dark" onClick={toggleRegister}>New User?</button>
             </div>
-            <h3 className="col-6">Play Civilization</h3>
-            <div className="col-3"></div>
+            {/* header */}
+            <h3 className="col-6 p-0">Play Civilization</h3>
+            {/* intentionally left blank */}
+            <div className="col-3 p-0"></div>
         </div>
-        <h5 className="mb-3">{cd.errorMessage? <span style={errorStyles}>{capitalize(cd.errorMessage)}</span>: null}{cd.errorMessage? ' - please try again.': 'Log in'}</h5>
+        {/* error message or sub-header */}
+        <h5 className="mb-3">{cd.errorMessage? <span style={errorStyles}>{capitalize(cd.errorMessage)}</span>: null}{cd.errorMessage? ' - please try again.': 'Log in'}</h5> 
         <form onSubmit={handleLoginOrRegister}>
-            <div className="row">
+            <div className="px-3 row">
+                {/* username input */}
                 <div className="form-floating col-lg-6 mb-3">
                     <input type="text" className="form-control" onChange={handleUsernameChange} value={cd.username} required/>
                     <label>Username</label>
                 </div>
             </div>
-            <div className="row">
+            <div className="px-3 row">
+                {/* password input */}
                 <div className="form-floating col-lg-6 mb-3">
                     <input key="password" type="password" className="form-control" id="password" placeholder="Password" value={cd.password} onChange={handlePasswordChange} required/>
                     <label htmlFor="password">Password</label>
                 </div>
             </div>
+            {/* submit */}
             <div><button className="mx-auto btn border btn-primary mb-3"  type="submit">Login!</button></div>
         </form>
     </div>)};
@@ -75,7 +82,8 @@ const Auth = (state, token, cd, setState, setToken, setCD) => {
     const Register = () => {
         return (<>
         <div className="row d-flex justify-content-between mt-3">
-            <div className="col-3 d-flex flex-no-wrap justify-conent-start">
+            {/* back button -> login */}
+            <div className="ps-4 col-3 d-flex flex-no-wrap justify-conent-start">
                 <button className="btn btn-dark btn-sm me-1 p-2" onClick={toggleRegister}>
                     <svg width="16" height="16" fill="currentColor" className="bi bi-x-circle" viewBox="0 0 16 16">
                         <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
@@ -83,27 +91,34 @@ const Auth = (state, token, cd, setState, setToken, setCD) => {
                     </svg>
                 </button>
             </div>
+            {/* header */}
             <h3 className="col-6">Play Civilization</h3>
+            {/* intentionally left blank */}
             <div className="col-3"></div>
         </div>
+        {/* error or sub-header */}
         <h5 className="mb-3">{cd.errorMessage? <span style={errorStyles}>{capitalize(cd.errorMessage)}</span>: null}{cd.errorMessage? ' - please try again.': 'New user'}</h5>
         <form onSubmit={handleLoginOrRegister}>
-            <div className="row my-3">
+            <div className="px-3 row my-3">
+                {/* username input */}
                 <div className="form-floating col-lg-6">
                     <input key="newUsername" type="text" className="form-control" id="newUsername" placeholder="text" value={cd.username} onChange={handleUsernameChange} required/>
                     <label htmlFor="newUsername">Username</label>
                 </div>
             </div>
-            <div className="row mb-3">
+            <div className="px-3 row mb-3">
+                {/* password input */}
                 <div className="form-floating col-6">
                     <input key="newPassword" type="password" className="form-control" id="newPassword" placeholder="Password" value={cd.password} onChange={handlePasswordChange} required/>
                     <label htmlFor="newPassword">Password</label>
                 </div>
+                {/* password repeat input */}
                 <div className="form-floating col-6">
                     <input key="newPasswordRepeat" type="password" className="form-control" id="newPasswordRepeat" placeholder="Password" value={cd.passwordRepeat} onChange={handlePasswordRepeatChange} required/>
                     <label htmlFor="newPasswordRepeat">Repeat Password</label>
                 </div>
             </div>
+            {/* submit */}
             <button className="btn btn-primary border mb-3">Create!</button>
         </form>
     </>)};

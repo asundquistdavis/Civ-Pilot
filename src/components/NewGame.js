@@ -102,22 +102,24 @@ const NewGame = (state, token, cd, player, game, civilizations, advCards, setSta
             {serverIsHost? <td><input className="form-check-input" type="checkbox"/></td>: null}
         </tr>)};
 
-    return (<div className="d-flex flex-column h-100">
+    return (<div className="d-flex flex-column h-100 mx-2">
 
         {/* header / username / log out button */}
-        <div className="row d-flex justify-content-between mt-3">
-            <div className="col-3 d-flex flex-no-wrap justify-conent-start">
+        <div className="row d-flex m-0 p-0justify-content-between mt-3">
+            <div className="col-3 m-0 p-0 m-0 d-flex flex-no-wrap justify-conent-start align-items-center">
                 {/* leave/delete game */}
                 {showingGame?
-                <button className="btn btn-dark btn-sm me-1 p-2" onClick={handleLeaveOrDelete}>
+                <button className="btn btn-dark btn-sm m-0 p-2" onClick={handleLeaveOrDelete}>
                     <svg width="16" height="16" fill="currentColor" className="bi bi-x-circle" viewBox="0 0 16 16">
                         <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
                         <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
                     </svg>
                 </button>:null}
             </div>
+            {/* header */}
             <h3 className="col-6">Play Civilization</h3>
-            <div className="col-3 d-flex flex-no-wrap justify-content-end align-items-center">
+            {/* player username / log out button */}
+            <div className="col-3 p-0 m-0 d-flex flex-no-wrap justify-content-end align-items-center">
                 {/* player name */}
                 <div className="me-1">{capitalize(player.username)}</div>
                 {/* log out */}
@@ -129,22 +131,23 @@ const NewGame = (state, token, cd, player, game, civilizations, advCards, setSta
                 </button>
             </div>
         </div>
+        {/* sub-header */}
         <h5>{showingGame? capitalize(game.host) + '\'s Game': 'Join or create a new game!'}</h5>
-        <form>
+        <form className="m-0 p-0">
             {/* toggle host */}
             <div className="form-check form-switch text-start">
                 <input className="form-check-input" type="checkbox" role="switch" checked={showingGame? (serverIsHost): state.isNewHost} disabled={Boolean(game)} onChange={()=>setState({...state, isNewHost: !state.isNewHost})}/>
                 <label className="form-check-label">Host Game?</label>
             </div>
             {/* input username / join, create or delete game button / start game button */}
-            <div className="row d-flex">
+            <div className="row d-flex flex row align-items-center justify-content-between m-0 p-0">
                 {/* input username */}
-                <div className="form-floating col-7 mb-3">
+                <div className="form-floating col-9 mb-3 m-0 p-0">
                     <input type="text" placeholder="Disabled input" className="form-control" autoComplete="off" onChange={handleHostNameChange} value={game? game.host:(state.isNewHost? player.username: cd.hostName)} required disabled={showingGame || state.isNewHost}/>
                     <label>Host Username</label>
                 </div>
                 {/* create or join game / start game */}
-                <div className="col-2 mb-3">
+                <div className="col-2 mb-3 p-0 m-0">
                     <button 
                     className="btn btn-sm btn-secondary"
                     style={(state.validGameId && !game) || state.isNewHost? gameIsAvailableStyle:null}
@@ -156,7 +159,7 @@ const NewGame = (state, token, cd, player, game, civilizations, advCards, setSta
             </div>
             {/* username / civilization / ready? */}
             {showingGame? 
-            <table className="table">
+            <table className="table border border-dark">
                 <thead><tr><th scope="col">Username</th><th scope="col">Civilization</th>{serverIsHost? <th scope="col">Kick</th>: null}</tr></thead>
                 <tbody>{game.players.map((player, key)=>renderTableRow(player, key))}</tbody>
             </table>

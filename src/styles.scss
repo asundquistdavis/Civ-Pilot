@@ -227,23 +227,23 @@ div.credit-filter label input:checked + span{
     box-shadow: 0 0 5px 5px yellow;
 };
 
-.blue label span {
+.blue {
     background-color: $blue;
 };
 
-.red label span{
+.red {
     background-color: $red;
 };
 
-.yellow label span {
+.yellow {
     background-color: $yellow;
 };
 
-.orange label span {
+.orange {
     background-color: $orange;
 };
 
-.green label span {
+.green {
     background-color: $green;
 };
 
@@ -288,6 +288,17 @@ div.alert-screen {
     height: 100%;
     background-color: rgba(0,0,0,0.2)
 };
+
+input.credit {
+    width: 35px;
+    height: 35px;
+    border: solid black 2px;
+    border-radius: 50%;
+    padding: 5px;
+    text-align: center;
+};
+
+$enable-negative-margins: true;
 
 @media screen and (min-width: 768px) {
     div.my-vh-100 {

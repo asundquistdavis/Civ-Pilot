@@ -348,6 +348,11 @@ class Player(Base):
         if adv_card: self.game.adv_cards.remove(adv_card)
         session.commit()
         return True
+    
+    def change_credits(self, session:Session, credits:dict):    
+        self.game.credits =  credits #{group: credit+int(credits[group]) for group, credit in self.game.credits.items()}
+        session.add(self)
+        session.commit()
 
     def __json__(self, parent:str=None):
         if parent=='info': return {

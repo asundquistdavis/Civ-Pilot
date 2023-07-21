@@ -137,7 +137,7 @@ const App = () => {
     return (
         <div className="container-fluid pt-md-5">
             <div className="row">
-                <div className="col-sm-12 col-md-8 mx-md-auto px-0 border border-dark text-center bg-light my-vh-100 overflow-auto overflow-md-none">
+                <div className="col-sm-12 col-md-8 mx-md-auto px-0 border border-dark text-center bg-light my-vh-100 overflow-y-auto overflow-x-hidden overflow-md-none">
                     {!token?
                         Auth(state, token, cd, setState, setToken, setCD)
                     :(player && (!game || (game && !game.turnNumber)))?

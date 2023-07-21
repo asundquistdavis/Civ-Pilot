@@ -242,20 +242,26 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
 
         return (
             <div>
+                {/* sub-header */}
                 <h5>{capitalize(game.host)}'s Game</h5>
+                {/* / end turn button */}
                 <div className="float-end mb-3">
                     {isServerHost? <button className="btn btn-primary" onClick={handleEndTurn}>End Turn {game.turnNumber}</button>: <div>Turn number: {game.turnNumber}</div>}
                 </div>
-                <div className="bg-light">
-                    <table className="table border border-dark">
-                        <thead><tr>
-                            <th scope="col"></th><th scope="col">Player{renderSortFor('player')}</th>
-                            <th scope="col">Civilization{renderSortFor('civilization')}</th>
-                            <th scope="col">Score{renderSortFor('score')}</th>
-                        </tr></thead>
-                        <tbody>{sortedPlayers.map(renderPlayerRow)}</tbody>
-                    </table>
-                </div>
+                {/* scoreboard table */}
+                <table className="table border border-dark bg-light">
+                    <thead><tr>
+                        {/* symbol column */}
+                        <th scope="col"></th>
+                        {/* username column */}
+                        <th scope="col">Player{renderSortFor('player')}</th>
+                        {/*  */}
+                        <th scope="col">Civilization{renderSortFor('civilization')}</th>
+                        {/* score column */}
+                        <th scope="col">Score{renderSortFor('score')}</th>
+                    </tr></thead>
+                    <tbody>{sortedPlayers.map(renderPlayerRow)}</tbody>
+                </table>
             </div>
         );
     };
@@ -314,55 +320,63 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
         const numberOfSelected = state.viewingPlayer.advCardsSelection.length
 
         return (<div>
-            <nav className="navbar sticky-top navbar-light bg-light border-dark border-bottom">
-                <div className="row flex-sm-row-reverse flex-row mb-1 align-items-bottom w-100 mx-1">
-                    <div className="col-12 col-md-6 mb-2 mb-md-0">
-                        <div className="row flex-row justify-content-between mx-1">
-                            <div className="col-4 col-md-2 p-0 d-md-none">
-                                <div className="row flex-row align-items-center">
+            <nav className="navbar sticky-top navbar-light bg-light border-dark border-bottom mx-n2">
+                <div className="row flex-row justify-content-start align-items-center mb-1 d-none d-md-flex w-100 p-0 m-0 mx-2">
+                    {/* cart price */}
+                    <div className="price-circle ms-1">{cartPrice}</div>
+                    {/* confirm cart */}
+                    <div className="col-6 p-0 m-0 text-start"><button className="btn btn-light btn-small" disabled={!isServerHost} onClick={handlePurchaseSubmit}>{capitalize(state.viewingPlayer.username)}'s Cart</button></div>
+                </div>
+                <div className="row flex-sm-row-reverse flex-row mb-1 align-items-bottom w-100 p-0 m-0 mx-2">
+                    <div className="col-12 col-md-6 mb-2 mb-md-0 m-0 p-0">
+                        <div className="row flex-row justify-content-between justify-content-md-end align-items-center p-0 m-0">
+                            <div className="col-5 d-md-none p-0 m-0">
+                                <div className="row flex-row align-items-center p-0 m-0">
+                                    {/* cart price */}
                                     <div className="price-circle">{cartPrice}</div>
-                                    <div className="col p-0 m-0 text-start"><button className="btn btn-light btn-small" disabled={!isServerHost} onClick={handlePurchaseSubmit}>{capitalize(state.viewingPlayer.username)}'s Cart</button></div>
+                                    {/* confirm cart */}
+                                    <div className="col p-0 m-0 text-start"><button className="btn btn-light btn-small p-0" disabled={!isServerHost} onClick={handlePurchaseSubmit}>{capitalize(state.viewingPlayer.username)}'s Cart</button></div>
                                 </div>
                             </div>
-                            <div className="col-7 col-md-10 p-0">
-                                <div className="row flex-row justify-content-end">
+                            <div className="col-7 col-md-12 p-0 m-0">
+                                <div className="row flex-row justify-content-end p-0 m-0">
                                     {/* blue toggle */}
-                                    <div className="credit-filter blue p-0 me-1">
+                                    <div className="credit-filter p-0 m-0 me-1">
                                         <label  htmlFor="filter-blue">
                                             <input type="checkbox" id="filter-blue" checked={state.filterColor.blue} onChange={()=>setState({...state, filterColor: {...state.filterColor, blue: !state.filterColor.blue}})}/>
-                                            <span>{state.viewingPlayer.credits.blue}</span>
+                                            <span className="blue">{state.viewingPlayer.credits.blue}</span>
                                         </label>
                                     </div>
                                     {/* red toggle */}
-                                    <div className="credit-filter red p-0 me-1 me-md-1">
+                                    <div className="credit-filter p-0 m-0 me-1">
                                         <label htmlFor="filter-red">
                                             <input type="checkbox" id="filter-red" checked={state.filterColor.red} onChange={()=>setState({...state, filterColor: {...state.filterColor, red: !state.filterColor.red}})}/>
-                                            <span>{state.viewingPlayer.credits.red}</span>
+                                            <span className="red">{state.viewingPlayer.credits.red}</span>
                                         </label>
                                     </div>
-                                    <div className="credit-filter green p-0 me-1 me-md-1">
+                                    <div className="credit-filter p-0 m-0 me-1">
                                         <label htmlFor="filter-green">
                                             <input type="checkbox" id="filter-green" checked={state.filterColor.green} onChange={()=>setState({...state, filterColor: {...state.filterColor, green: !state.filterColor.green}})}/>
-                                            <span>{state.viewingPlayer.credits.green}</span>
+                                            <span className="green">{state.viewingPlayer.credits.green}</span>
                                         </label>
                                     </div>
-                                    <div className="credit-filter yellow p-0 me-1 me-md-1">
+                                    <div className="credit-filter  p-0 m-0 me-1">
                                         <label htmlFor="filter-yellow">
                                             <input type="checkbox" id="filter-yellow" checked={state.filterColor.yellow} onChange={()=>setState({...state, filterColor: {...state.filterColor, yellow: !state.filterColor.yellow}})}/>
-                                            <span>{state.viewingPlayer.credits.yellow}</span>
+                                            <span className="yellow">{state.viewingPlayer.credits.yellow}</span>
                                         </label>
                                     </div>
-                                    <div className="credit-filter orange p-0 me-1 me-md-1">
+                                    <div className="credit-filter p-0 m-0">
                                         <label htmlFor="filter-orange">
                                             <input type="checkbox" id="filter-orange" checked={state.filterColor.oragne} onChange={()=>setState({...state, filterColor: {...state.filterColor, orange: !state.filterColor.orange}})}/>
-                                            <span>{state.viewingPlayer.credits.orange}</span>
+                                            <span className="orange">{state.viewingPlayer.credits.orange}</span>
                                         </label>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div className="col-12 col-md-6 p-0">
+                    <div className="col-12 col-md-6 p-0 m-0">
                         <div className="input-group">
                             <input className="form-control form-control-sm" type="text" id="query" placeholder="Seach for Card" value={state.query} onChange={handleQueryChange}></input>
                             <span className="input-group-text">Sort By: </span>
@@ -375,7 +389,7 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
                 </div>
             </nav>
             <div>  
-                <div className="row mx-1">{advCardsSortedByStatus.map(CivCard)}</div>
+                <div className="row m-0 p-0 overflow-md-auto">{advCardsSortedByStatus.map(CivCard)}</div>
             </div>
         </div>)
 
@@ -394,27 +408,54 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
             setCD({...cd, advCardsViewing: advCards})
         }; 
 
-        return (<div>
-            <h5>Viewing {capitalize(viewingPlayer.username)}'s Info</h5>
-            <div className="row">
-                <div className="col-2"><button className="btn btn-primary mb-2" onClick={handlePurchaseSelect} disabled={!canMakeSelection}>Add Cards</button></div>
+        const handleCreditChange = (event, group) => {
+            if (isServerHost) {
+                const credits = state.viewingPlayer.credits
+                credits[group] = !isNaN(event.target.value) && !isNaN(parseInt(event.target.value))? parseInt(event.target.value): 0;
+                console.log(credits)
+                const data = {
+                    type: 'creditChange',
+                    token,
+                    playerId: player.id,
+                    targetPlayerId: state.viewingPlayer.id,
+                    gameId: game.id,
+                    credits
+                };
+                axios.post('/api/gameaction', data)
+                .then(response=>setGame(response.data.game));
+            };
+        };
+
+        return (<div className="col-12">
+            <div className="row d-flex flex-row justify-content-between align-items-center m-0 p-0 py-2 border-bottom border-dark mx-n2">
+                {/* add cards button */}
+                <div className="col-4 p-0 m-0 ms-2 text-start"><button className="btn btn-primary" onClick={handlePurchaseSelect} disabled={!canMakeSelection}>Add Cards</button></div>
+                <div className="col-7 p-0">
+                    <div className="row flex-row justify-content-end p-0 me-2">
+                        <input className="credit blue p-0 me-1" onChange={(event)=>handleCreditChange(event, 'blue')} disabled={!isServerHost} value={state.viewingPlayer.credits.blue}/>
+                        <input className="credit red p-0 me-1" onChange={(event)=>handleCreditChange(event, 'red')} disabled={!isServerHost} value={state.viewingPlayer.credits.red}/>
+                        <input className="credit green p-0 me-1" onChange={(event)=>handleCreditChange(event, 'green')} disabled={!isServerHost} value={state.viewingPlayer.credits.green}/>
+                        <input className="credit yellow p-0 me-1" onChange={(event)=>handleCreditChange(event, 'yellow')} disabled={!isServerHost} value={state.viewingPlayer.credits.yellow}/>
+                        <input className="credit orange p-0" onChange={(event)=>handleCreditChange(event, 'orange')} disabled={!isServerHost} value={state.viewingPlayer.credits.orange}/>
+                    </div>
+                </div>
             </div>
-            <div className="row">{playerHasCards? playersAdvCards.map(CivCard): <div>Player has no cards</div>}</div>
+            <div className="row mx-1">{playerHasCards? playersAdvCards.map(CivCard): <div className="my-3">Player has no cards</div>}</div>
         </div>)
     };
 
-    return (<div className="d-flex flex-column">
-        <div className="row d-flex justify-content-between mt-3 mx-1 align-items-center">
+    return (<div className="d-flex flex-column mx-2">
+        <div className="row d-flex justify-content-between mt-3 align-items-center">
             <div className="col-3 d-flex flex-no-wrap justify-conent-start">
                 {state.viewingPlayer? 
                 // back to scoreboard
-                <button className="btn btn-dark btn-sm me-1 p-2" onClick={() => setState({...state, viewingPlayer: null, viewingMode: 'board'})}>
+                <button className="btn btn-dark btn-sm p-2" onClick={() => setState({...state, viewingPlayer: null, viewingMode: 'board'})}>
                     <svg width="16" height="16" fill="currentColor" className="bi bi-arrow-left-circle" viewBox="0 0 16 16">
                         <path fillRule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-4.5-.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5z"/>
                     </svg>
                 </button>:
                 // leave/delete game
-                <button className="btn btn-dark btn-sm me-1 p-2" onClick={handleLeaveOrDelete}>
+                <button className="btn btn-dark btn-sm p-2" onClick={handleLeaveOrDelete}>
                     <svg width="16" height="16" fill="currentColor" className="bi bi-x-circle" viewBox="0 0 16 16">
                         <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
                         <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
