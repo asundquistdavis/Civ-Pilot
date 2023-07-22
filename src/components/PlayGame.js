@@ -229,9 +229,9 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
                     {/* name/ civ */}
                     <td className="p-0 align-middle" ><button className="h-100 col-12 p-0 border border-dark" style={civStyle} onClick={()=>handlePlayerSelect(playerRow)}><h6 className="p-0 m-0">{capitalize(playerRow.username)}</h6><p className="p-0 m-0">{capitalize(playerRow.civ)}</p></button></td>
                     {/* cities */}
-                    <td className="p-0 align-middle"><input className="cities p-0 m-0" type="numeric" onChange={(event)=>handleCitiesChange(event, playerRow)} disabled={!(playerIsRow || isServerHost)} value={playerRow.cities}/></td>
+                    <td className="p-0 align-middle"><input className="cities p-0 m-0" type="nnumber" onChange={(event)=>handleCitiesChange(event, playerRow)} disabled={!(playerIsRow || isServerHost)} value={playerRow.cities}/></td>
                     {/* census */}
-                    <td className="p-0 align-middle"><input className="census p-0 m-0" type="numeric" onChange={(event)=>handleCensusChange(event, playerRow)} disabled={!(playerIsRow || isServerHost)} value={playerRow.census}/></td>
+                    <td className="p-0 align-middle"><input className="census p-0 m-0" type="number" onChange={(event)=>handleCensusChange(event, playerRow)} disabled={!(playerIsRow || isServerHost)} value={playerRow.census}/></td>
                     {/* score */}
                     <td className="p-0 align-middle" ><div className={'score px-1 mx-auto ' + (playerRow.canAdvance? 'advancing': '')}>{playerRow.score}</div></td>
                 </tr>
@@ -272,7 +272,7 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
                         <button className="btn btn-small btn-primary" onClick={()=>setState({...state, viewingMode: 'browser', viewingPlayer: game.players.filter(playerF=>playerF.id===player.id)[0]})}>Add Cards</button>
                     </div>
                     <div className="col text-end">
-                        {isServerHost? <button className="btn btn-primary" onClick={handleEndTurn}>End Turn {game.turnNumber}</button>: <div>Turn number: {game.turnNumber}</div>}
+                        {isServerHost? <button className="btn btn-primary" onClick={handleEndTurn}>{game.isEnding? 'End Game': 'End Turn '+ game.turnNumber}</button>: <div>Turn number: {game.turnNumber}</div>}
                     </div>
                 </div>
                 {/* scoreboard table */}
@@ -474,6 +474,10 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
         </div>)
     };
 
+    const EndGame = () => {return(<div className="mt-3">
+        The game is over!
+    </div>)};
+
     return (<div className="d-flex flex-column mx-2">
         <div className="row d-flex justify-content-between mt-3 align-items-center">
             <div className="col-3 d-flex flex-no-wrap justify-conent-start">
@@ -507,7 +511,9 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
             </div>
         </div>
         {/* game name */}
-        {state.viewingMode==='card'? 
+        {game.isOver? 
+            EndGame()
+        :state.viewingMode==='card'? 
             Player()
         :state.viewingMode==='browser'?
             Browser()

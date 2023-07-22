@@ -189,7 +189,8 @@ class GamePlayer(Base):
     def is_host(self): return self.player_info.hosted_game == self.game_info if self.player_info else None
     @property
     def can_advance(self)->bool:
-        if not self.civ: return False
+        if not self.game_info.turn_number: return False
+        if self.ast_position>14: return False
         civ = [civ for civ in civs if civ['name']==self.civ][0]
         next_age = civ['ages'][self.ast_position]
         cities, cards, price = self.age_reqs[next_age]
@@ -395,6 +396,7 @@ class Game(Base):
     host:Mapped[Player] = relationship(Player, back_populates='hosted_game', uselist=False)
     players:Mapped[List[GamePlayer]] = relationship(GamePlayer, cascade='all, delete-orphan', back_populates='game_info')
     turn_number:Mapped[int] = mapped_column(Integer, nullable=True)
+    over:Mapped[bool] = mapped_column(Boolean, default=False)
 
     def start(self, session:Session, player:Player):
         if player.game.game_id != self.id: raise PlayerNotAutherizedError
@@ -407,13 +409,17 @@ class Game(Base):
         session.commit()
 
     def end_turn(self, session:Session, data):
+        self.turn_number += 1
         for player in self.players:
-            player.ast_position += 1 if player.can_advance else 0
+            if player.can_advance: player.ast_position += 1
             player.selection_ready = False
             player.has_purchased = False
-        self.turn_number += 1
+            if player.ast_position>14:self.over=True
         session.commit()
 
+    @property
+    def game_is_ending(self): 
+        return any(player.can_advance and player.ast_position==14 for player in self.players)
     @property
     def all_players_have_civ(self)->bool:
         return all(bool(player.civ) for player in self.players)
@@ -424,7 +430,9 @@ class Game(Base):
             'hostId': self.host.id,
             'host': self.host.username,
             'players': [json(player, parent='info') for player in self.players],
-            'turnNumber': self.turn_number
+            'turnNumber': self.turn_number,
+            'isEnding': self.game_is_ending,
+            'isOver': self.over,
         }
         if parent == 'player': return {
             'id': self.id,
