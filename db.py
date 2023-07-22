@@ -136,6 +136,8 @@ class AdvCard(Base):
 # each instance represents a player's info for an individual game
 class GamePlayer(Base):
 
+    age_reqs = [(0,0,0),(2,0,0),(3,3,0),(3,3,100),(4,2,200),(5,3,200)]
+
     class AdvCards(Base):
 
         __tablename__ = 'advcards'
@@ -174,27 +176,34 @@ class GamePlayer(Base):
     civ:Mapped[str] = mapped_column(String, nullable=True)
     adv_cards:Mapped[List[AdvCards]] = relationship(AdvCards, back_populates='player', cascade='all, delete-orphan')
     adv_cards_selection:Mapped[List[AdvCardsSelection]] = relationship(AdvCardsSelection, back_populates='player', cascade='all, delete-orphan')
-    ast_score:Mapped[int] = mapped_column(Integer, default=0)
+    ast_position:Mapped[int] = mapped_column(Integer, default=0)
     credits:Mapped[dict] = mapped_column(JSON, default={'blue':0, 'yellow':0, 'orange':0, 'green':0, 'red':0})
+    cities:Mapped[int] = mapped_column(Integer, default=0)
+    census:Mapped[int] = mapped_column(Integer, default=0)
     # player state variables
     selection_ready:Mapped[bool] = mapped_column(Boolean, default=False)
     has_purchased:Mapped[bool] = mapped_column(Boolean, default=False)
-    can_advance:Mapped[bool] = mapped_column(Boolean, default=True)
 
     # player properties
     @property
     def is_host(self): return self.player_info.hosted_game == self.game_info if self.player_info else None
-
+    @property
+    def can_advance(self)->bool:
+        if not self.civ: return False
+        civ = [civ for civ in civs if civ['name']==self.civ][0]
+        next_age = civ['ages'][self.ast_position]
+        cities, cards, price = self.age_reqs[next_age]
+        return (self.cities >= cities and len([card for card in self.adv_cards if card.adv_card.price >= price]) >= cards)
     @property
     def score(self)->int:
         cards_score = sum(card.adv_card.points for card in self.adv_cards)
-        ast_score = self.ast_score
+        ast_score = 5*self.ast_position
         total_score = cards_score + ast_score
         return total_score
     @property
     def civ_info(self)->dict: return next(filter(lambda civ: civ['name']==self.civ, civs)) if self.civ else None
     @property
-    def ast_order(self)->int: return self.civ_info['ast'] if self.civ_info else None
+    def ast_rank(self)->int: return self.civ_info['ast'] if self.civ_info else None
     @property
     def pcolor(self)->str: return self.civ_info['color'] if self.civ_info else None
 
@@ -213,13 +222,15 @@ class GamePlayer(Base):
             'advCardsSelection': [json(card, parent='info') for card in self.adv_cards_selection],
             'civ': self.civ,
             'color': self.pcolor,
-            'astOrder': self.ast_order,
+            'astRank': self.ast_rank,
+            'astPosition': self.ast_position,
             'score': self.score,
             'hasPurchased': self.has_purchased,
             'canAdvance': self.can_advance,
             'selectionReady': self.selection_ready,
-            'credits': self.credits
-
+            'credits': self.credits,
+            'cities': self.cities,
+            'census': self.census,
         }
         game = {
             'id': self.player_info.id if self.player_info else None,
@@ -294,7 +305,8 @@ class Player(Base):
 
     # creates new game with player as host and adds player to game
     def create_game(self, session:Session)->'Game':
-        if self.hosted_game: return json(self.hosted_game) # already hosting game, return that
+        print('create game')
+        if self.hosted_game: return self.hosted_game # already hosting game, return that
         # create game with player as host
         game:Game = Game(host=self)
         session.add(game)
@@ -305,6 +317,7 @@ class Player(Base):
         playergame.player_info = self
         session.add(playergame)
         session.commit()
+        print(game)
         return game
     
     def select_card(self, session:Session, cardId):
@@ -395,8 +408,7 @@ class Game(Base):
 
     def end_turn(self, session:Session, data):
         for player in self.players:
-            player.ast_score += 5 if player.can_advance else 0
-            player.can_advance = True
+            player.ast_position += 1 if player.can_advance else 0
             player.selection_ready = False
             player.has_purchased = False
         self.turn_number += 1
@@ -426,7 +438,6 @@ class Game(Base):
         }
     
     def __repr__(self) -> str: return f'{self.host}\'s game'
-
 
 if __name__ == '__main__':
     Base.metadata.create_all(engine)

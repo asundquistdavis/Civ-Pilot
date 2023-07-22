@@ -96,11 +96,11 @@ const App = () => {
 
     useEffect(()=>{
         getGameInfo();
+        getAdvCards();
+        getCivilizations();
     }, [player]);
 
     useEffect(()=>{
-        getAdvCards();
-        getCivilizations();
         setState({...state, viewingPlayer: game?.players?.filter(player=>player.id===state?.viewingPlayer?.id)[0]})
     }, [game]);
 

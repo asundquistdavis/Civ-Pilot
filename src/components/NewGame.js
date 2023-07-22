@@ -85,12 +85,12 @@ const NewGame = (state, token, cd, player, game, civilizations, advCards, setSta
     const renderTableRow = (playerForRow, key) => {
 
         const playerHasCiv = (civ) => {return game.players? game.players.filter(player=>player.civ===civ).length>0: false};
-
         const civsAreAvailable = civilizations? civilizations.map(civ=>{return {...civ, isAvailable: !playerHasCiv(civ.name)}}): null
+        const civColor = game? game.players.filter(player=>player.id===playerForRow.id).map(player=>player.color? player.color: null): null
 
         const renderCivCell = () => {
-            return (<td><select className="form-select text-center" style={{backgroundColor: game? game.players.filter(player=>player.id===playerForRow.id).map(player=>player.color? player.color: null): null}} defaultValue={playerForRow.civ} onChange={(event)=>setcivilization(event, playerForRow)}>
-                <option value={null} style={{backgroundColor: 'grey'}}>Select a Civilization</option>
+            return (<td><select className="form-select text-center" style={{backgroundColor: civColor}} defaultValue={playerForRow.civ} onChange={(event)=>setcivilization(event, playerForRow)}>
+                <option value={null} disabled={playerForRow.civilization} style={{backgroundColor: 'grey'}}>Select a Civilization</option>
                 {civsAreAvailable? civsAreAvailable.map((civilization, key)=>
                     <option key={key} disabled={!civilization.isAvailable} value={civilization.name} style={{backgroundColor: civilization.color}}>{capitalize(civilization.name)}</option>)
                 :null}
@@ -98,7 +98,7 @@ const NewGame = (state, token, cd, player, game, civilizations, advCards, setSta
 
         return(<tr key={key}>
             <td>{capitalize(playerForRow.username)}</td>
-            {(serverIsHost || playerForRow.id===player.id)? renderCivCell(playerForRow): <td style={{backgroundColor: game? game.players.filter(player=>player.id===playerForRow.id).map(player=>player.color? player.color: null): null}}>{playerForRow.civ}</td>}
+            {(serverIsHost || playerForRow.id===player.id)? renderCivCell(playerForRow): <td style={{backgroundColor: game? game.players.filter(player=>player.id===playerForRow.id).map(player=>player.color? player.color: null): null}}>{capitalize(playerForRow.civ)}</td>}
             {serverIsHost? <td><input className="form-check-input" type="checkbox"/></td>: null}
         </tr>)};
 

@@ -252,30 +252,23 @@ div.score-advance {
     width: fit-content;
 };
 
-div.score-advance label span {
+div.score {
     border: solid black 2px;
     height: 35px;
-    width: 35px;
-    margin: 0;
+    width: fit-content;
+    margin: 0;  
     text-align: center;
-    display: block;
     background-color: #f5f8f9;
     color: #eabb34;
     font-weight: bold;
     font-size: 1.5rem;
     -webkit-text-stroke-width: 1px;
     -webkit-text-stroke-color: black;
+    line-height: 120%;
 };
 
-.score-advance label input {
-    display: none;
-    position: absolute;
-    color: #fff;
-};
-
-div.score-advance label input:checked + span {
+div.advancing {
     box-shadow: 0 0 15px gold;
-    background-color: #ede9dd
 };
 
 div.alert-screen {
@@ -294,6 +287,25 @@ input.credit {
     height: 35px;
     border: solid black 2px;
     border-radius: 50%;
+    padding: 5px;
+    text-align: center;
+};
+
+input.cities {
+    background-color: #f5f8f9;
+    width: 35px;
+    height: 35px;
+    border: solid black 2px;
+    border-radius: 50%;
+    padding: 5px;
+    text-align: center;
+};
+
+input.census {
+    background-color: #f5f8f9;
+    width: 35px;
+    height: 35px;
+    border: solid black 2px;
     padding: 5px;
     text-align: center;
 };

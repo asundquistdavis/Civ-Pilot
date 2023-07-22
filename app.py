@@ -43,7 +43,6 @@ def get_player():
 @app.route('/api/game', methods=['POST'])
 def game():
     data:dict = request.json
-    print(f'{data=}')
     key = app.config['SECRET_KEY']
     type = data['type'] # create, join, get, start, leave, delete
     try: 
@@ -88,6 +87,8 @@ def game_action():
             if type=='advCardPurchase': targetPlayer.game.selection_ready = True; session.add(targetPlayer); session.commit()
             if type=='advCardRemove' and requestingPlayer.game.is_host: targetPlayer.remove_card(session, data['advCardId'])
             if type=='creditChange' and requestingPlayer.game.is_host: targetPlayer.change_credits(session, data['credits'])
+            if type=='censusChange': targetPlayer.game.census = data['census']; session.add(targetPlayer); session.commit()
+            if type=='citiesChange': targetPlayer.game.cities = data['cities']; session.add(targetPlayer); session.commit()
             if type=='playerAdvance': targetPlayer.game.can_advance = not targetPlayer.game.can_advance; session.add(targetPlayer); session.commit()
             if type=='endTurn' and requestingPlayer.game.is_host: requestingPlayer.game.game_info.end_turn(session, data)
             game:Game = requestingPlayer.game.game_info

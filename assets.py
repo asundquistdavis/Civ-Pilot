@@ -1,26 +1,24 @@
-from typing import List
-# from db import Session, AdvCard_db, development_url, Credits_db, CreditTo_db, Text_db
 
 # civ info
 civs = [
-    {'name': 'minoa', 'color': '#7cdc24', 'ast': 1},
-    {'name': 'saba', 'color': '#eb7615', 'ast': 2},
-    {'name': 'assyria', 'color': '#92ccdc', 'ast': 3},
-    {'name': 'maurya', 'color': '#ff0000', 'ast': 4},
-    {'name': 'celt', 'color': '#05a714', 'ast': 5},
-    {'name': 'babylon', 'color': '#a6a6a6', 'ast': 6},
-    {'name': 'carthage', 'color': '#e8a808', 'ast': 7},
-    {'name': 'dravidia', 'color': '#6a2d97', 'ast': 8},
-    {'name': 'hatti', 'color': '#ff66cc', 'ast': 9},
-    {'name': 'kushan', 'color': '#663300', 'ast': 10},
-    {'name': 'rome', 'color': '#ff0066', 'ast': 11},
-    {'name': 'persia', 'color': '#990099', 'ast': 12},
-    {'name': 'iberia', 'color': '#eaeaea', 'ast': 13},
-    {'name': 'nubia', 'color': '#44aaaa', 'ast': 14},
-    {'name': 'hellas', 'color': '#ffff00', 'ast': 15},
-    {'name': 'indus', 'color': '#008000', 'ast': 16},
-    {'name': 'egypt', 'color': '#ffffcc', 'ast': 17},
-    {'name': 'parthia', 'color': '#666633', 'ast': 18}
+    {'name': 'minoa', 'color': '#7cdc24', 'ast': 1, 'ages': [0, 0, 0, 0, 0, 1, 1, 1, 2, 2, 3, 3, 3, 4, 5]},
+    {'name': 'saba', 'color': '#eb7615', 'ast': 2, 'ages': [0, 0, 0, 0, 0, 1, 1, 1, 2, 2, 3, 3, 3, 4, 5]},
+    {'name': 'assyria', 'color': '#92ccdc', 'ast': 3, 'ages': [0, 0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 5]},
+    {'name': 'maurya', 'color': '#ff0000', 'ast': 4,  'ages': [0, 0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 5]},
+    {'name': 'celt', 'color': '#05a714', 'ast': 5,  'ages': [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 3, 3, 3, 4, 5]},
+    {'name': 'babylon', 'color': '#a6a6a6', 'ast': 6, 'ages': [0, 0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 5]},
+    {'name': 'carthage', 'color': '#e8a808', 'ast': 7, 'ages': [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 3, 3, 3, 4, 5]},
+    {'name': 'dravidia', 'color': '#6a2d97', 'ast': 8, 'ages': [0, 0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 5]},
+    {'name': 'hatti', 'color': '#ff66cc', 'ast': 9, 'ages': [0, 0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 5]},
+    {'name': 'kushan', 'color': '#663300', 'ast': 10, 'ages': [0, 0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 5]},
+    {'name': 'rome', 'color': '#ff0066', 'ast': 11, 'ages': [0, 0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 5]},
+    {'name': 'persia', 'color': '#990099', 'ast': 12, 'ages': [0, 0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 5]},
+    {'name': 'iberia', 'color': '#eaeaea', 'ast': 13, 'ages': [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 3, 3, 3, 4, 5]},
+    {'name': 'nubia', 'color': '#44aaaa', 'ast': 14, 'ages': [0, 0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 5]},
+    {'name': 'hellas', 'color': '#ffff00', 'ast': 15, 'ages': [0, 0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 5]},
+    {'name': 'indus', 'color': '#008000', 'ast': 16, 'ages': [0, 0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 5]},
+    {'name': 'egypt', 'color': '#ffffcc', 'ast': 17, 'ages': [0, 0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 5]},
+    {'name': 'parthia', 'color': '#666633', 'ast': 18, 'ages': [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 3, 3, 3, 4, 5]}
 ]
 
 # adv card colors

@@ -166,18 +166,6 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
 
         const handlePlayerSelect = (playerRow) => {setState({...state, viewingPlayer: playerRow, viewingMode: 'card'})};
 
-        const handleCanAdvanceCheck = (playerRow) => {
-            const data = {
-                type: 'playerAdvance',
-                playerId: player.id,
-                token,
-                targetPlayerId: playerRow.id,
-                gameId: game.id
-            };
-            axios.post('/api/gameaction', data)
-            .then(response=>{setGame(response.data.game)});
-        };
-
         const handleEndTurn = () => {
             if (isServerHost) {
                 const data = {
@@ -200,18 +188,52 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
             const symbols = [playerIsHost? '\u2B50': null, playerIsReady? '\u2705': null];
             const civStyle = {backgroundColor: playerRow.color}
             const inputId = `can-advance-${playerRow.id}`;
+            const playerIsRow = player.id===playerRow.id;
+
+            const handleCitiesChange = (event, playerRow) => {
+                const cities = !isNaN(event.target.value) && !isNaN(parseInt(event.target.value))? parseInt(event.target.value): 0;
+                const data = {
+                    type: 'citiesChange',
+                    playerId: player.id,
+                    targetPlayerId: playerRow.id,
+                    gameId: game.id,
+                    token,
+                    cities,
+                };
+                if (playerIsRow || isServerHost) {
+                    axios.post('/api/gameaction', data)
+                    .then(response=>setGame(response.data.game));
+                };
+            };
+
+            const handleCensusChange = (event, playerRow) => {
+                const census = !isNaN(event.target.value) && !isNaN(parseInt(event.target.value))? parseInt(event.target.value): 0;
+                const data = {
+                    type: 'censusChange',
+                    playerId: player.id,
+                    targetPlayerId: playerRow.id,
+                    gameId: game.id,
+                    token,
+                    census,
+                };
+                if (playerIsRow || isServerHost) {
+                    axios.post('/api/gameaction', data)
+                    .then(response=>setGame(response.data.game));
+                };
+            };
     
             return (
-               <tr key={key}>
-                    <td>{symbols.join(' ')}</td>
-                    <td><button className="btn btn-sm btn-primary" onClick={()=>handlePlayerSelect(playerRow)}>{capitalize(playerRow.username)}</button></td>
-                    <td className="py-3" style={civStyle}>{capitalize(playerRow.civ)}</td>
-                    <td><div className="score-advance p-0 mx-auto">
-                        <label htmlFor={inputId}>
-                            <input type="checkbox" id={inputId} onChange={()=>handleCanAdvanceCheck(playerRow)} checked={playerRow.canAdvance}/>
-                            <span>{playerRow.score}</span>
-                        </label>
-                    </div></td>
+               <tr className="p-0" key={key}>
+                    {/* symbols */}
+                    <td className="p-0 align-middle" >{symbols.join(' ')}</td>
+                    {/* name/ civ */}
+                    <td className="p-0 align-middle" ><button className="h-100 col-12 p-0 border border-dark" style={civStyle} onClick={()=>handlePlayerSelect(playerRow)}><h6 className="p-0 m-0">{capitalize(playerRow.username)}</h6><p className="p-0 m-0">{capitalize(playerRow.civ)}</p></button></td>
+                    {/* cities */}
+                    <td className="p-0 align-middle"><input className="cities p-0 m-0" type="numeric" onChange={(event)=>handleCitiesChange(event, playerRow)} disabled={!(playerIsRow || isServerHost)} value={playerRow.cities}/></td>
+                    {/* census */}
+                    <td className="p-0 align-middle"><input className="census p-0 m-0" type="numeric" onChange={(event)=>handleCensusChange(event, playerRow)} disabled={!(playerIsRow || isServerHost)} value={playerRow.census}/></td>
+                    {/* score */}
+                    <td className="p-0 align-middle" ><div className={'score px-1 mx-auto ' + (playerRow.canAdvance? 'advancing': '')}>{playerRow.score}</div></td>
                 </tr>
             );
         };
@@ -245,8 +267,13 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
                 {/* sub-header */}
                 <h5>{capitalize(game.host)}'s Game</h5>
                 {/* / end turn button */}
-                <div className="float-end mb-3">
-                    {isServerHost? <button className="btn btn-primary" onClick={handleEndTurn}>End Turn {game.turnNumber}</button>: <div>Turn number: {game.turnNumber}</div>}
+                <div className="row flex-row mb-2">
+                    <div className="col me-auto text-start">
+                        <button className="btn btn-small btn-primary" onClick={()=>setState({...state, viewingMode: 'browser', viewingPlayer: game.players.filter(playerF=>playerF.id===player.id)[0]})}>Add Cards</button>
+                    </div>
+                    <div className="col text-end">
+                        {isServerHost? <button className="btn btn-primary" onClick={handleEndTurn}>End Turn {game.turnNumber}</button>: <div>Turn number: {game.turnNumber}</div>}
+                    </div>
                 </div>
                 {/* scoreboard table */}
                 <table className="table border border-dark bg-light">
@@ -255,8 +282,10 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
                         <th scope="col"></th>
                         {/* username column */}
                         <th scope="col">Player{renderSortFor('player')}</th>
-                        {/*  */}
-                        <th scope="col">Civilization{renderSortFor('civilization')}</th>
+                        {/* cities column */}
+                        <th scope="col">Cities{renderSortFor('cities')}</th>
+                        {/* census column */}
+                        <th scope="col">Census{renderSortFor('census')}</th>
                         {/* score column */}
                         <th scope="col">Score{renderSortFor('score')}</th>
                     </tr></thead>
@@ -389,7 +418,7 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
                 </div>
             </nav>
             <div>  
-                <div className="row m-0 p-0 overflow-md-auto">{advCardsSortedByStatus.map(CivCard)}</div>
+                <div className="row m-0 p-0 overflow-md-auto mx-n1">{advCardsSortedByStatus.map(CivCard)}</div>
             </div>
         </div>)
 
@@ -427,7 +456,8 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
         };
 
         return (<div className="col-12">
-            <div className="row d-flex flex-row justify-content-between align-items-center m-0 p-0 py-2 border-bottom border-dark mx-n2">
+            <h5>{capitalize(viewingPlayer.username)}</h5>
+            <div className="row d-flex flex-row justify-content-between align-items-center m-0 p-0 pb-2 border-bottom border-dark mx-n2">
                 {/* add cards button */}
                 <div className="col-4 p-0 m-0 ms-2 text-start"><button className="btn btn-primary" onClick={handlePurchaseSelect} disabled={!canMakeSelection}>Add Cards</button></div>
                 <div className="col-7 p-0">
@@ -440,7 +470,7 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
                     </div>
                 </div>
             </div>
-            <div className="row mx-1">{playerHasCards? playersAdvCards.map(CivCard): <div className="my-3">Player has no cards</div>}</div>
+            <div className="row p-0 mx-n1">{playerHasCards? playersAdvCards.map(CivCard): <div className="my-3">Player has no cards</div>}</div>
         </div>)
     };
 
