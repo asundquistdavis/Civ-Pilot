@@ -479,7 +479,7 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
             <h5>{capitalize(viewingPlayer.username)}</h5>
             <div className="d-flex justify-content-between align-items-center m-0 p-0 pb-2 border-bottom border-dark mx-n2">
                 <span className="ms-2">
-                    <button type="button" className="btn btn-small btn-dark p-1 m-0 me-1" onClick={()=>setState({...state, viewingMode: 'browser', viewingPlayer: game.players.filter(playerF=>playerF.id===player.id)[0]})}>
+                    <button type="button" className="btn btn-small btn-dark p-1 m-0 me-1" onClick={()=>setState({...state, viewingMode: 'browser', viewingPlayer: state.viewingPlayer})}>
                         <PlusSquare width={25} height={25}/>
                     </button>
                 </span>
