@@ -1,11 +1,13 @@
 import React from "react";
 import axios from "axios";
+import History from "./History";
+import { CheckSquare, PlusSquare, StopBtn, BarChartLine, SkipEndBtn, XCircle, BoxArrowRight, Backspace } from "react-bootstrap-icons";
 
 const capitalize = (str) => str? str.charAt(0).toUpperCase() + str.slice(1): str;
 const title = (str) => str.split(' ').map(capitalize).join(' ')
 const sentance = (str) => str?.split('. ')?.map(capitalize).join('. ') || capitalize(str);
 
-const PlayGame = (state, token, cd, player, game, civilizations, advCards, setState, setToken, setCD, setPlayer, setGame, setCivilizations, setAdvCards) => {
+const PlayGame = (state, token, cd, player, game, civilizations, advCards, setState, setToken, setCD, setPlayer, setGame, setCivilizations, setAdvCards, history, setHistory) => {
 
     const colors = {'orange': '#ee8222',
         'yellow': '#f7cb0d',
@@ -74,7 +76,7 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
                 token
             };
             axios.post('/api/gameaction', data)
-            .then(response=>{console.log(response);setGame(response.data.game)});
+            .then(response=>{setGame(response.data.game)});
         };
     };
 
@@ -157,11 +159,9 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
                 const username = player.username.toUpperCase(); 
                 const otherUsername = otherPlayer.username.toUpperCase();
                 return (username > otherUsername)? (state.sortAcs? -1: 1): (otherUsername > username)? (state.sortAcs? 1: -1): 0}):
-            state.sortMode==='civilization'? [...game.players].sort((player, otherPlayer)=>{
-                const civName = player.civ.toUpperCase(); 
-                const otherCivame = otherPlayer.civ.toUpperCase();
-                return (civName > otherCivame)? (state.sortAcs? -1: 1): (otherCivame > civName)? (state.sortAcs? 1: -1): 0}):
             state.sortMode==='score'? [...game.players].sort((player, otherPlayer)=>{return state.sortAcs? player.score-otherPlayer.score: otherPlayer.score-player.score}):
+            state.sortMode==='cities'? [...game.players].sort((player, otherPlayer)=>state.sortAcs? player.cities-otherPlayer.cities: otherPlayer.cities-player.cities):
+            state.sortMode==='census'? [...game.players].sort((player, otherPlayer)=>state.sortAcs? player.census-otherPlayer.census: otherPlayer.census-player.census):
             game.players);
 
         const handlePlayerSelect = (playerRow) => {setState({...state, viewingPlayer: playerRow, viewingMode: 'card'})};
@@ -177,6 +177,8 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
                 };
                 axios.post('/api/gameaction', data)
                 .then(response=>{setGame(response.data.game)});
+                axios.post('/api/history', data)
+                .then(response=>{setHistory(response.data.turns)});
             };
         };
 
@@ -185,9 +187,8 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
             const playerIsHost = playerRow.isHost;
             const playerHasSelection = playerRow.advCardsSelection.length>0;
             const playerIsReady = playerRow.selectionReady;
-            const symbols = [playerIsHost? '\u2B50': null, playerIsReady? '\u2705': null];
-            const civStyle = {backgroundColor: playerRow.color}
-            const inputId = `can-advance-${playerRow.id}`;
+            const symbols = [playerIsHost? '\u2B50': null, playerIsReady && !playerHasSelection? '\u2713': null, playerHasSelection? '\u26A0': null];
+            const civStyle = {backgroundColor: playerRow.color};
             const playerIsRow = player.id===playerRow.id;
 
             const handleCitiesChange = (event, playerRow) => {
@@ -229,7 +230,7 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
                     {/* name/ civ */}
                     <td className="p-0 align-middle" ><button className="h-100 col-12 p-0 border border-dark" style={civStyle} onClick={()=>handlePlayerSelect(playerRow)}><h6 className="p-0 m-0">{capitalize(playerRow.username)}</h6><p className="p-0 m-0">{capitalize(playerRow.civ)}</p></button></td>
                     {/* cities */}
-                    <td className="p-0 align-middle"><input className="cities p-0 m-0" type="nnumber" onChange={(event)=>handleCitiesChange(event, playerRow)} disabled={!(playerIsRow || isServerHost)} value={playerRow.cities}/></td>
+                    <td className="p-0 align-middle"><input className="cities p-0 m-0" type="number" onChange={(event)=>handleCitiesChange(event, playerRow)} disabled={!(playerIsRow || isServerHost)} value={playerRow.cities}/></td>
                     {/* census */}
                     <td className="p-0 align-middle"><input className="census p-0 m-0" type="number" onChange={(event)=>handleCensusChange(event, playerRow)} disabled={!(playerIsRow || isServerHost)} value={playerRow.census}/></td>
                     {/* score */}
@@ -266,14 +267,27 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
             <div>
                 {/* sub-header */}
                 <h5>{capitalize(game.host)}'s Game</h5>
-                {/* / end turn button */}
-                <div className="row flex-row mb-2">
-                    <div className="col me-auto text-start">
-                        <button className="btn btn-small btn-primary" onClick={()=>setState({...state, viewingMode: 'browser', viewingPlayer: game.players.filter(playerF=>playerF.id===player.id)[0]})}>Add Cards</button>
-                    </div>
-                    <div className="col text-end">
-                        {isServerHost? <button className="btn btn-primary" onClick={handleEndTurn}>{game.isEnding? 'End Game': 'End Turn '+ game.turnNumber}</button>: <div>Turn number: {game.turnNumber}</div>}
-                    </div>
+                <div className="d-flex mb-2 align-items-center">  
+                    {/* add cards */}
+                    <span>
+                    <button type="button" className="btn btn-small btn-dark p-1 m-0 me-1" onClick={()=>setState({...state, viewingMode: 'browser', viewingPlayer: game.players.filter(playerF=>playerF.id===player.id)[0]})}>
+                        <PlusSquare width={25} height={25}/>
+                    </button>
+                    </span>
+                    {/* history */}
+                    <span>
+                    <button type="button" className="btn btn-small btn-dark p-1 m-0" onClick={()=>setState({...state, viewingMode: 'history'})}>
+                        <BarChartLine width={25} height={25}/>
+                    </button>
+                    </span>
+                    {/* turn number */}
+                    <span className="ms-auto">
+                        Turn number: {game.turnNumber}
+                    </span>
+                    {/* end turn button */}
+                    <span className="ms-1">
+                    {isServerHost? <button className="btn btn-dark btn-sm d-block p-1" onClick={handleEndTurn}>{game.isEnding? <StopBtn width={25} height={25}/>: <SkipEndBtn width={25} height={25}/>}</button>:null}
+                    </span>
                 </div>
                 {/* scoreboard table */}
                 <table className="table border border-dark bg-light">
@@ -360,11 +374,18 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
                     <div className="col-12 col-md-6 mb-2 mb-md-0 m-0 p-0">
                         <div className="row flex-row justify-content-between justify-content-md-end align-items-center p-0 m-0">
                             <div className="col-5 d-md-none p-0 m-0">
-                                <div className="row flex-row align-items-center p-0 m-0">
+                                <div className="d-flex align-items-center p-0 m-0">
+                                    {/* confirm */}
+                                    {isServerHost? <div>
+                                        <button className="btn btn-dark btn-small p-1" disabled={!isServerHost} onClick={handlePurchaseSubmit}>
+                                            <CheckSquare width={25} height={25}/>
+                                        </button>
+                                    </div>: null}
                                     {/* cart price */}
-                                    <div className="price-circle">{cartPrice}</div>
-                                    {/* confirm cart */}
-                                    <div className="col p-0 m-0 text-start"><button className="btn btn-light btn-small p-0" disabled={!isServerHost} onClick={handlePurchaseSubmit}>{capitalize(state.viewingPlayer.username)}'s Cart</button></div>
+                                    <div className="ms-1 price-circle">{cartPrice}</div>
+                                    {/* cart name */}
+                                    <div className="ms-1">{capitalize(state.viewingPlayer.username)}'s Cart</div>
+       
                                 </div>
                             </div>
                             <div className="col-7 col-md-12 p-0 m-0">
@@ -441,7 +462,6 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
             if (isServerHost) {
                 const credits = state.viewingPlayer.credits
                 credits[group] = !isNaN(event.target.value) && !isNaN(parseInt(event.target.value))? parseInt(event.target.value): 0;
-                console.log(credits)
                 const data = {
                     type: 'creditChange',
                     token,
@@ -457,9 +477,12 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
 
         return (<div className="col-12">
             <h5>{capitalize(viewingPlayer.username)}</h5>
-            <div className="row d-flex flex-row justify-content-between align-items-center m-0 p-0 pb-2 border-bottom border-dark mx-n2">
-                {/* add cards button */}
-                <div className="col-4 p-0 m-0 ms-2 text-start"><button className="btn btn-primary" onClick={handlePurchaseSelect} disabled={!canMakeSelection}>Add Cards</button></div>
+            <div className="d-flex justify-content-between align-items-center m-0 p-0 pb-2 border-bottom border-dark mx-n2">
+                <span className="ms-2">
+                    <button type="button" className="btn btn-small btn-dark p-1 m-0 me-1" onClick={()=>setState({...state, viewingMode: 'browser', viewingPlayer: game.players.filter(playerF=>playerF.id===player.id)[0]})}>
+                        <PlusSquare width={25} height={25}/>
+                    </button>
+                </span>
                 <div className="col-7 p-0">
                     <div className="row flex-row justify-content-end p-0 me-2">
                         <input className="credit blue p-0 me-1" onChange={(event)=>handleCreditChange(event, 'blue')} disabled={!isServerHost} value={state.viewingPlayer.credits.blue}/>
@@ -481,19 +504,14 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
     return (<div className="d-flex flex-column mx-2">
         <div className="row d-flex justify-content-between mt-3 align-items-center">
             <div className="col-3 d-flex flex-no-wrap justify-conent-start">
-                {state.viewingPlayer? 
+                {state.viewingPlayer || state.viewingMode==='history'? 
                 // back to scoreboard
-                <button className="btn btn-dark btn-sm p-2" onClick={() => setState({...state, viewingPlayer: null, viewingMode: 'board'})}>
-                    <svg width="16" height="16" fill="currentColor" className="bi bi-arrow-left-circle" viewBox="0 0 16 16">
-                        <path fillRule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-4.5-.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5z"/>
-                    </svg>
+                <button className="btn btn-dark btn-sm p-1" onClick={() => setState({...state, viewingPlayer: null, viewingMode: 'board'})}>
+                    <Backspace width={25} height={25}/>
                 </button>:
                 // leave/delete game
-                <button className="btn btn-dark btn-sm p-2" onClick={handleLeaveOrDelete}>
-                    <svg width="16" height="16" fill="currentColor" className="bi bi-x-circle" viewBox="0 0 16 16">
-                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                        <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
-                    </svg>
+                <button className="btn btn-dark btn-sm p-1" onClick={handleLeaveOrDelete}>
+                    <XCircle width={25} height={25}/>
                 </button>}
             </div>
             {/* title */}
@@ -502,11 +520,8 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
                 {/* player name */}
                 <div className="me-1">{capitalize(player.username)}</div>
                 {/* log out */}
-                <button className="btn btn-sm btn-danger ms-md-1 p-2" onClick={handleLogout}>
-                    <svg width="16" height="16" fill="currentColor" className="bi bi-box-arrow-right" viewBox="0 0 16 16">
-                        <path fillRule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
-                        <path fillRule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
-                    </svg>
+                <button className="btn btn-sm btn-danger ms-md-1 p-1" onClick={handleLogout}>
+                    <BoxArrowRight width={25} height={25}/>
                 </button>
             </div>
         </div>
@@ -517,6 +532,8 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
             Player()
         :state.viewingMode==='browser'?
             Browser()
+        :state.viewingMode==='history'?
+            <History state={{player, history, state}}/>
         :Scoreboard()}
     </div>);
 };

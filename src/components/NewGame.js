@@ -3,7 +3,7 @@ import axios from "axios";
 
 const capitalize = (string) => string? string.charAt(0).toUpperCase() + string.slice(1): string;
 
-const NewGame = (state, token, cd, player, game, civilizations, advCards, setState, setToken, setCD, setPlayer, setGame, setCivilizations, setAdvCards, usernames, setUsernames) => {
+const NewGame = (state, token, cd, player, game, civilizations, advCards, setState, setToken, setCD, setPlayer, setGame, setCivilizations, setAdvCards, usernames, setUsernames, setHistory) => {
 
     const allPlayersHaveCiv = game? Boolean(game.players.filter(player=>player.civ!==null)): false;
     const serverIsHost = game? game.hostId===player.id: false;
@@ -43,7 +43,7 @@ const NewGame = (state, token, cd, player, game, civilizations, advCards, setSta
         event.preventDefault()
             if (state.isNewHost) {
                 axios.post('/api/game', {playerId:player.id, token: token, type: 'create'})
-                .then(response=>setGame(response.data.game));
+                .then(response=>{setGame(response.data.game)});
             } else {
             if (state.validGameId) {
                 axios.post('/api/game', {playerId: player.id, gameId: state.validGameId, token: token, type: 'join'})

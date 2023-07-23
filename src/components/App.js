@@ -19,6 +19,7 @@ const App = () => {
         viewingCard: null,
         alert: null,
         query: '',
+        graphMode: 'score',
     });
 
     // client data
@@ -38,6 +39,7 @@ const App = () => {
     const [civilizations, setCivilizations] = useState([]);
     const [advCards, setAdvCards] = useState([]);
     const [usernames, setUsernames] = useState([]);
+    const [history, setHistory] = useState(null);
 
     const getUsernames = async () => {
         axios.get('/api/usernames')
@@ -69,6 +71,7 @@ const App = () => {
                 setCD({...cd, errorMessage: message});
                 message==='game dne'? setGame(null): null;
             });
+            getHistory();
         };
     };
 
@@ -87,11 +90,25 @@ const App = () => {
         .catch(error=>setCD({...cd, errorMessage: error.response.data.message}));
     };
 
+    const getHistory = () => {
+        const data = {
+            playerId: player.id,
+            token,
+        };
+        axios.post('api/history', data)
+        .then(response=>{setHistory(response.data.history)});
+    };
+
+    useEffect(()=>{
+        if (state.viewingMode==='history') {
+            getHistory();
+        };
+    }, [state]);
+
     useEffect(()=>{
         const localToken = localStorage.getItem(token);
         if (localToken) {setToken(localToken)};
         getPlayerInfo();
-        // if (token===null) {setCD({...cd, errorMessage: null})};
     }, [token]);
 
     useEffect(()=>{
@@ -143,7 +160,7 @@ const App = () => {
                     :(player && (!game || (game && !game.turnNumber)))?
                         NewGame(state, token, cd, player, game, civilizations, advCards, setState, setToken, setCD, setPlayer, setGame, setCivilizations, setAdvCards, usernames, setUsernames)
                     :(player && game && game.turnNumber)?
-                        PlayGame(state, token, cd, player, game, civilizations, advCards, setState, setToken, setCD, setPlayer, setGame, setCivilizations, setAdvCards)
+                        PlayGame(state, token, cd, player, game, civilizations, advCards, setState, setToken, setCD, setPlayer, setGame, setCivilizations, setAdvCards, history, setHistory)
                     :cd.errorMessage?
                         Error():
                     Loading()}

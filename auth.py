@@ -10,7 +10,7 @@ def validate_register(data:'dict[str, str]')->'tuple[str, str, str]':
     if password != password_repeat: raise PasswordDoesNotMatchError
     with Session(engine) as session:
         players = session.query(Player).filter_by(username=username).all()
-        if players and username in (usernames:=[player.username for player in players]): print(usernames); raise UserNameTakenError
+        if players and username in (usernames:=[player.username for player in players]): raise UserNameTakenError
     return username, password
 
 def authorize_user(key:str, username:str, password:str)->dict:
