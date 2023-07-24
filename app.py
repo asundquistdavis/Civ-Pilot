@@ -117,4 +117,4 @@ def login():
     return jsonify(token)
 
 if __name__ == '__main__':
-    app.run(debug=production)
+    app.run(debug=True)
