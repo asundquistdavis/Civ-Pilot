@@ -102,8 +102,9 @@ const App = () => {
     useEffect(()=>{
         if (state.viewingMode==='history') {
             getHistory();
+            state.graphMode==='score'? null: setState({...state, graphMode: 'score'})
         };
-    }, [state]);
+    }, [state.viewingMode]);
 
     useEffect(()=>{
         const localToken = localStorage.getItem(token);

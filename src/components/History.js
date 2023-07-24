@@ -17,7 +17,6 @@ class History extends React.Component {
 
         const yaxis = {score:'Player Score (Victory Points)', census:'Population (tokens)', cities:'Number of Citis', astPosition:'AST Position', advCards:'Number of Advancement Cards',} 
         const turns = this.state.history? this.state.history.turns.map(turn=>turn.turnNumber): [];
-        console.log(this.state.history);
         const playerdata = (mode) => this.state.history? this.state.history.turns?.[0].players.map((player, index)=>{
             return {
                 x: turns,

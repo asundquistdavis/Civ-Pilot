@@ -1,7 +1,8 @@
 import React from "react";
 import axios from "axios";
 import History from "./History";
-import { CheckSquare, PlusSquare, StopBtn, BarChartLine, SkipEndBtn, XCircle, BoxArrowRight, Backspace } from "react-bootstrap-icons";
+import Info from "./Info";
+import { CheckSquare, PlusSquare, StopBtn, BarChartLine, SkipEndBtn, XCircle, BoxArrowRight, Backspace, InfoSquare } from "react-bootstrap-icons";
 
 const capitalize = (str) => str? str.charAt(0).toUpperCase() + str.slice(1): str;
 const title = (str) => str.split(' ').map(capitalize).join(' ')
@@ -270,15 +271,21 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
                 <div className="d-flex mb-2 align-items-center">  
                     {/* add cards */}
                     <span>
-                    <button type="button" className="btn btn-small btn-dark p-1 m-0 me-1" onClick={()=>setState({...state, viewingMode: 'browser', viewingPlayer: game.players.filter(playerF=>playerF.id===player.id)[0]})}>
-                        <PlusSquare width={25} height={25}/>
-                    </button>
+                        <button type="button" className="btn btn-small btn-dark p-1 m-0 me-1" onClick={()=>setState({...state, viewingMode: 'browser', viewingPlayer: game.players.filter(playerF=>playerF.id===player.id)[0]})}>
+                            <PlusSquare width={25} height={25}/>
+                        </button>
                     </span>
                     {/* history */}
                     <span>
-                    <button type="button" className="btn btn-small btn-dark p-1 m-0" onClick={()=>setState({...state, viewingMode: 'history'})}>
-                        <BarChartLine width={25} height={25}/>
-                    </button>
+                        <button type="button" className="btn btn-small btn-dark p-1 m-0 me-1" onClick={()=>setState({...state, viewingMode: 'history'})}>
+                            <BarChartLine width={25} height={25}/>
+                        </button>
+                    </span>
+                    {/* info */}
+                    <span>
+                        <button type="button" className="btn btn-small btn-dark p-1" onClick={()=>setState({...state, viewingMode: 'info'})}>
+                            <InfoSquare width={25} height={25}/>
+                        </button>
                     </span>
                     {/* turn number */}
                     <span className="ms-auto">
@@ -286,7 +293,7 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
                     </span>
                     {/* end turn button */}
                     <span className="ms-1">
-                    {isServerHost? <button className="btn btn-dark btn-sm d-block p-1" onClick={handleEndTurn}>{game.isEnding? <StopBtn width={25} height={25}/>: <SkipEndBtn width={25} height={25}/>}</button>:null}
+                        {isServerHost? <button className="btn btn-dark btn-sm d-block p-1" onClick={handleEndTurn}>{game.isEnding? <StopBtn width={25} height={25}/>: <SkipEndBtn width={25} height={25}/>}</button>:null}
                     </span>
                 </div>
                 {/* scoreboard table */}
@@ -504,7 +511,7 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
     return (<div className="d-flex flex-column mx-2">
         <div className="row d-flex justify-content-between mt-3 align-items-center">
             <div className="col-3 d-flex flex-no-wrap justify-conent-start">
-                {state.viewingPlayer || state.viewingMode==='history'? 
+                {state.viewingMode!=='board'? 
                 // back to scoreboard
                 <button className="btn btn-dark btn-sm p-1" onClick={() => setState({...state, viewingPlayer: null, viewingMode: 'board'})}>
                     <Backspace width={25} height={25}/>
@@ -534,6 +541,8 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
             Browser()
         :state.viewingMode==='history'?
             <History state={{player, history, state}}/>
+        :state.viewingMode==='info'?
+            Info()
         :Scoreboard()}
     </div>);
 };
