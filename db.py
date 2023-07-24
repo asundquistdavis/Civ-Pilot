@@ -1,18 +1,21 @@
 from sqlalchemy import create_engine, Integer, String, ForeignKey, JSON, Boolean
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, Session, backref
-from config import protical, user, password, host, port, database
 from typing import Any, Protocol, List
 from assets import civs, advancement_cards, adv_colors
 from exception import PlayerNotAutherizedError, GamePlayersNotReady, IvalidRequestError, GameInProgressError
 from collections import Counter
+from jwt import decode
+import os
+import config
 
 # set to False for production
-development = True
+production = bool('secret' in os.environ)
 
 # url to connect to database
-development_url = 'sqlite:///db.sqlite'
-production_url = f'{protical}://{user}:{password}@{host}:{port}/{database}'
-url = development_url if development else production_url
+local_url = 'sqlite:///db.sqlite'
+protical, user, password, host, port, database = (os.environ['protical'], os.environ['user'], os.environ['password'], os.environ['host'], os.environ['port'], os.environ['database']) if production else (config.protical, config.user, config.password, config.host, config.port, config.database)
+aws_url = f'{protical}://{user}:{password}@{host}:{port}/{database}'
+url = aws_url
 engine = create_engine(url)
 
 def get_or_create(session:Session, Table:type, return_type=False, literal_only:bool=False, get_only=False, **conditions)->Any:
@@ -260,9 +263,9 @@ class Player(Base):
         if in_json: return [json(player, parent='all') for player in session.query(Player).all()]
         return list(session.query(Player).all())
 
-    def login(session:Session, username:str, password:str)->'Player':
+    def login(session:Session, key:str, username:str, password:str)->'Player':
         player = session.query(Player).filter_by(username=username).first()
-        if player and player.password == password: return player
+        if player and decode(player.password, key=key, algorithms=['HS256'])['password'] == password: return player
         return None
 
     __tablename__ = 'player'

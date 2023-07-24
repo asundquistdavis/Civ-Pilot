@@ -1,6 +1,7 @@
 from db import Player, Session, engine, json, get_or_create
 from jwt import encode, decode
 from exception import IncompleteInputError, PasswordDoesNotMatchError, UserNameTakenError, InvalidCredentialsError, NoSuchUserError, PlayerNotFoundError
+from random import randint
 
 def validate_register(data:'dict[str, str]')->'tuple[str, str, str]':
     username, password, password_repeat = None, None, None
@@ -14,8 +15,10 @@ def validate_register(data:'dict[str, str]')->'tuple[str, str, str]':
     return username, password
 
 def authorize_user(key:str, username:str, password:str)->dict:
+    salt = randint(0, 1000000000000000000)
+    hash = encode({'password': password, 'salt': salt}, key=key, algorithm='HS256')
     with Session(engine) as session:
-        get_or_create(session, Player, username=username, password=password)
+        get_or_create(session, Player, username=username, password=hash)
     return authenticate_user(key, username, password)
 
 def validate_login(data:'dict[str, str]')->'tuple[str, str, str]':
@@ -27,7 +30,7 @@ def validate_login(data:'dict[str, str]')->'tuple[str, str, str]':
 def authenticate_user(key:str, username:str, password:str)->dict:
     with Session(engine) as session:
         if not session.query(Player).filter_by(username=username).first(): raise NoSuchUserError
-        player:Player = Player.login(session, username, password)
+        player:Player = Player.login(session, key, username, password)
         if not player: raise InvalidCredentialsError
     token = encode({'user_id': player.id}, key=key, algorithm="HS256")
     return {'token': token}
@@ -37,7 +40,7 @@ def get_new_player(session:Session, key:str, data:dict)->dict:
     player_id = decode(jwt=data['token'], key=key, algorithms=["HS256"])['user_id']
     player:Player = get_or_create(session, Player, id=player_id, literal_only=True)
     if not player: raise InvalidCredentialsError
-    return player 
+    return player
 
 def get_valid_player(session:Session, key:str, data:dict)->Player:
     if not ('token' in data.keys() and 'playerId' in data.keys()): raise InvalidCredentialsError

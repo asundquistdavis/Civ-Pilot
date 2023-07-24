@@ -6,6 +6,9 @@
 # node modules
 node_modules
 
+# config
+config.py
+
 # User-specific files
 *.rsuser
 *.suo

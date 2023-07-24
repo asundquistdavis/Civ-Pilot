@@ -1,12 +1,15 @@
 from flask import Flask, render_template, jsonify, request
 from db import Session, Player, engine, Game, json, get_or_create, AdvCard, GamePlayer
-from config import secret_key
+import config 
 from auth import  validate_login, validate_register, authenticate_user, authorize_user, get_new_player, get_valid_player
 from exception import AuthError, PlayerNotFoundError, PlayerNotAutherizedError
 from assets import civs
+import os
+
+production = bool('secret' in os.environ)
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = secret_key
+app.config['SECRET_KEY'] = os.environ['secret'] if production else config.secret_key
 
 bundle = '\\static\\bundle.js'
 
@@ -93,7 +96,7 @@ def history():
     data:dict = request.json
     with Session(engine) as session:
         player:Player = get_valid_player(session, app.config['SECRET_KEY'], data)
-        game:Game = player.game.game_info
+        game:Game = player.game.game_info if player.game else None
         return jsonify({'history': json(game, parent='history')})
 
 @app.route('/api/usernames')
@@ -114,4 +117,4 @@ def login():
     return jsonify(token)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=production)
