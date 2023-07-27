@@ -542,7 +542,7 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
         :state.viewingMode==='history'?
             <History state={{player, history, state}}/>
         :state.viewingMode==='info'?
-            Info()
+            Info(state, setState, advCards)
         :Scoreboard()}
     </div>);
 };

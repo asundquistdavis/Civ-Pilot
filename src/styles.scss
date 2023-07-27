@@ -310,12 +310,162 @@ input.census {
     text-align: center;
 };
 
+// calamity card
+
+div.cardInline div.calamityCard, div.cardInline div.advCard {
+    height: 250px;
+};
+
+div.calamityCard {
+    position: relative;
+    background-color: #ede9dd;
+    box-shadow: .1rem .1rem .1rem;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    user-select: none;
+    border-style: solid;
+    border-width: 2px;
+    border-color: black;
+    position: relative;
+    padding: 8px;
+};
+
+div.calamityCard:hover {
+    box-shadow: .25rem  .25rem .25rem;
+};
+
+div.minorCalamityCardTitle {
+    color: rgb(74, 74, 74);
+    background-color: #e3e008;
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 500;
+    line-height: 100%;
+    width: 100%;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    padding-left: 34px;
+    padding-right: 5px;
+    box-shadow: 0 3px 3px grey;
+    z-index: 1;
+};
+
+div.majorCalamityCardTitle {
+    color: #eabf1b;
+    background-color: #a72b0f;
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 500;
+    line-height: 100%;
+    width: 100%;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    padding-left: 34px;
+    padding-right: 5px;
+    box-shadow: 0 3px 3px grey;
+    z-index: 1;
+};
+
+div.nonTrable {
+    background-color: #f5f8f9;
+    color: #a72b0f;
+    text-align: center;
+    font-weight: 600;
+    font-size: .9rem;
+    width: 100%;
+    box-shadow: 0 3px 3px grey;
+    padding-right: 5px;
+    padding-left: 5px;
+    z-index: 1;
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: black;
+};
+
+div.levelCircle {
+    border-radius: 50%;
+    background-color: #f5f8f9;
+    border: solid gray 1px;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    font-size: 1.5rem;
+    color: #b7bac3;
+    width: 35px;
+    left: 2px;
+    height: 35px;
+    top: 2px;
+    z-index: 2;
+    box-shadow: 1px 1px 6px grey;
+};
+
+div.majorCalamity {
+    background-color: #f5f8f9;
+    color: #a72b0f;
+    width: 100%;
+    text-align: center;
+    font-weight: 400;
+    font-size: .9rem;
+    padding-right: 5px;
+    padding-left: 5px;
+    margin-top: auto;
+    box-shadow: 0 3px 3px grey;
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: black;
+};
+
+div.minorCalamity {
+    background-color: #f5f8f9;
+    color: #e3e008;
+    width: 100%;
+    text-align: center;
+    font-weight: 400;
+    font-size: .9rem;
+    padding-right: 5px;
+    padding-left: 5px;
+    margin-top: auto;
+    box-shadow: 0 3px 3px grey;
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: black;
+};
+
+div.calamityText {
+    background-color: #f5f8f9;
+    width: 100%;
+    padding-right: 5px;
+    padding-left: 5px;
+    padding-top: 2px;
+    box-shadow: 0 3px 3px grey;
+    overflow: auto;
+    text-align: start;
+};
+
+span.posModifier::before {
+    content: '+ ';
+    font-weight: 500;
+    color: green;
+};
+
+span.negModifier::before {
+    content: '- ';
+    font-weight: 500;
+    color: #a72b0f;
+};
+
+// bootstrap variables
+
 $enable-negative-margins: true;
+
+// custom veiwport breakpoint
 
 @media screen and (min-width: 768px) {
     div.my-vh-100 {
       height: auto;
     };
 ;}
+
+// bootstrap import
 
 @import "bootstrap/scss/bootstrap";

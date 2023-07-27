@@ -14,8 +14,8 @@ production = bool('secret' in os.environ)
 # url to connect to database
 local_url = 'sqlite:///db.sqlite'
 protical, user, password, host, port, database = (os.environ['protical'], os.environ['user'], os.environ['password'], os.environ['host'], os.environ['port'], os.environ['database']) if production else (config.protical, config.user, config.password, config.host, config.port, config.database)
-aws_url = f'{protical}://{user}:{password}@{host}:{port}/{database}'
-url = aws_url
+production_url = f'{protical}://{user}:{password}@{host}:{port}/{database}'
+url = production_url if production else local_url
 engine = create_engine(url)
 
 def get_or_create(session:Session, Table:type, return_type=False, literal_only:bool=False, get_only=False, **conditions)->Any:

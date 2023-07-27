@@ -20,6 +20,12 @@ const App = () => {
         alert: null,
         query: '',
         graphMode: 'score',
+        infoMode: 'pop',
+        calamities: null,
+        infoFilter: {tradable: false, major: true},
+        infoColor: {green: false, blue: false, orange: false, yellow: false, red: false},
+        infoSort: null,
+        infoQuery: '',
     });
 
     // client data
@@ -84,6 +90,11 @@ const App = () => {
         });
     };
 
+    const getCalamities = () => {
+        axios.get('api/calamities')
+        .then(response=>setState({...state, calamities: response.data.calamities}))
+    }
+
     const getAdvCards = () => {
         axios.get('api/advcards')
         .then(response=>setAdvCards(response.data.advCards))
@@ -116,6 +127,7 @@ const App = () => {
         getGameInfo();
         getAdvCards();
         getCivilizations();
+        getCalamities();
     }, [player]);
 
     useEffect(()=>{
@@ -137,14 +149,17 @@ const App = () => {
     const Error = () => {return (<><div>Something went wrong</div>{cd.errorMessage? <div>{cd.errorMessage}</div>:null}</>)};
 
     const Alert = () => {
+        const alert = state.alert
+
         return (
             <div className="alert-screen">
                 <div className="row my-5">
-                    <div className="col-8 col-sm-4 mx-auto bg-light p-3 border border-dark rounded">
-                        <div className="row text-center mb-2">{state.alert.message}</div>
-                        <div className="row d-flex flex-row justify-content-center">
-                            <div className="col px-0 text-center"><button className="btn btn-danger" onClick={state.alert.action}>{state.alert.actionMessage}</button></div>
-                            <div className="col px-0 text-center"><button className="btn btn-secondary" onClick={()=>setState({...state, alert:null})}>Back</button></div>
+                    <div className="col-10 col-sm-8 col-md-6 col-lg-4 mx-auto bg-light p-3 border border-dark rounded">
+                        {alert.message? <div className="text-center mb-2">{alert.message}</div>: null}
+                        {alert.content? <div className="text-center mb-2">{alert.content()}</div>: null}
+                        <div className="d-flex">
+                            {alert.action? <div className="px-0 text-center ms-auto me-3"><button className="btn btn-danger" onClick={alert.action}>{alert.actionMessage}</button></div>: null}
+                            <div className="px-0 text-center me-auto"><button className="btn btn-secondary" onClick={()=>setState({...state, alert:null})}>Back</button></div>
                         </div>
                     </div>
                 </div>

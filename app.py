@@ -5,6 +5,7 @@ from auth import  validate_login, validate_register, authenticate_user, authoriz
 from exception import AuthError, PlayerNotFoundError, PlayerNotAutherizedError
 from assets import civs
 import os
+from json import load
 
 production = bool('secret' in os.environ)
 
@@ -84,6 +85,11 @@ def game_action():
 @app.route('/api/civilizations')
 def get_civilizations():
     return jsonify({'civilizations': civs})
+
+@app.route('/api/calamities')
+def get_calamities():
+    with open('calamities.json') as calamities:
+        return jsonify(load(calamities))
 
 @app.route('/api/advcards')
 def get_advcards():
