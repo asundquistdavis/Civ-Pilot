@@ -6,10 +6,11 @@ from exception import PlayerNotAutherizedError, GamePlayersNotReady, IvalidReque
 from collections import Counter
 from jwt import decode
 import os
-import config
 
 # set to False for production
 production = bool('secret' in os.environ)
+
+if not production: import config
 
 # url to connect to database
 local_url = 'sqlite:///db.sqlite'
