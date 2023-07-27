@@ -75,22 +75,23 @@ const Info = (state, setState, advCards) => {
         
         const query = state.infoQuery;
         const colors = state.infoColor;
+        const sort = state.infoSort;
         const noColors = Object.values(colors).every(color=>!color);
         const advCardsP = advCards
         .filter(card=>
             (noColors||Object.entries(colors).reduce((any, [group, filter])=>{return any||(filter&&(card.pgroup===group||card.sgroup===group))},false)) && 
             (!query || card.name.includes(query) || (card.texts.includes(query))))
-        .sort((card, otherCard)=>card.name.toUpperCase()<otherCard.name.toUpperCase()?-1:1)
+        .sort((card, otherCard)=>sort==='price'?card.price-otherCard.price:card.name.toUpperCase()<otherCard.name.toUpperCase()?-1:1)
 
         return (<div className="">
         <div className="row d-flex flex-row p-0 m-0">
             <div className="col-12 col-sm-7 me-auto p-0 m-0 mb-1 mb-sm-0">
                 <div className="input-group">
                     <input className="form-control form-control-sm" type="text" id="query" placeholder="Search for Advancement" value={query} onChange={(event)=>setState({...state, infoQuery:event.target.value})}></input>
-                    <span className="input-group-text">Sort By: </span>
-                    <input type="radio" className=" btn-check" name="btnradio" id="sort-by-name" autoComplete="off" checked={state.sortMode==='name'} onChange={{}}/>
+                    <span className="input-group-text">Sort:</span>
+                    <input type="radio" className=" btn-check" name="btnradio" id="sort-by-name" autoComplete="off" checked={state.infoSort==='name'} onChange={()=>setState({...state, infoSort: 'name'})}/>
                     <label className="btn btn-secondary" htmlFor="sort-by-name">Name</label>
-                    <input type="radio" className=" btn-check" name="btnradio" id="sort-by-price" autoComplete="off" checked={state.sortMode==='price'} onChange={{}}/>
+                    <input type="radio" className=" btn-check" name="btnradio" id="sort-by-price" autoComplete="off" checked={state.infoSort==='price'} onChange={()=>setState({...state, infoSort: 'price'})}/>
                     <label className="btn btn-secondary" htmlFor="sort-by-price">Price</label>
                 </div>
             </div>

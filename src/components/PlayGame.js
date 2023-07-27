@@ -371,16 +371,16 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
 
         return (<div>
             <nav className="navbar sticky-top navbar-light bg-light border-dark border-bottom mx-n2">
-                <div className="row flex-row justify-content-start align-items-center mb-1 d-none d-md-flex w-100 p-0 m-0 mx-2">
+                {/* <div className="row flex-row justify-content-start align-items-center mb-1 d-none d-md-flex w-100 p-0 m-0 mx-2"> */}
                     {/* cart price */}
-                    <div className="price-circle ms-1">{cartPrice}</div>
+                    {/* <div className="price-circle ms-1">{cartPrice}</div> */}
                     {/* confirm cart */}
-                    <div className="col-6 p-0 m-0 text-start"><button className="btn btn-light btn-small" disabled={!isServerHost} onClick={handlePurchaseSubmit}>{capitalize(state.viewingPlayer.username)}'s Cart</button></div>
-                </div>
+                    {/* <div className="col-6 p-0 m-0 text-start"><button className="btn btn-light btn-small" disabled={!isServerHost} onClick={handlePurchaseSubmit}>{capitalize(state.viewingPlayer.username)}'s Cart</button></div> */}
+                {/* </div> */}
                 <div className="row flex-sm-row-reverse flex-row mb-1 align-items-bottom w-100 p-0 m-0 mx-2">
-                    <div className="col-12 col-md-6 mb-2 mb-md-0 m-0 p-0">
+                    <div className="col-12 mb-2 m-0 p-0">
                         <div className="row flex-row justify-content-between justify-content-md-end align-items-center p-0 m-0">
-                            <div className="col-5 d-md-none p-0 m-0">
+                            <div className="col-5 p-0 m-0">
                                 <div className="d-flex align-items-center p-0 m-0">
                                     {/* confirm */}
                                     {isServerHost? <div>
@@ -392,10 +392,9 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
                                     <div className="ms-1 price-circle">{cartPrice}</div>
                                     {/* cart name */}
                                     <div className="ms-1">{capitalize(state.viewingPlayer.username)}'s Cart</div>
-       
                                 </div>
                             </div>
-                            <div className="col-7 col-md-12 p-0 m-0">
+                            <div className="col-7 p-0 m-0">
                                 <div className="row flex-row justify-content-end p-0 m-0">
                                     {/* blue toggle */}
                                     <div className="credit-filter p-0 m-0 me-1">
@@ -433,14 +432,16 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
                             </div>
                         </div>
                     </div>
-                    <div className="col-12 col-md-6 p-0 m-0">
+                    <div className="p-0 m-0 me-auto">
                         <div className="input-group">
                             <input className="form-control form-control-sm" type="text" id="query" placeholder="Seach for Card" value={state.query} onChange={handleQueryChange}></input>
-                            <span className="input-group-text">Sort By: </span>
+                            <span className="input-group-text">Sort:</span>
                             <input type="radio" className=" btn-check" name="btnradio" id="sort-by-name"autoComplete="off" checked={state.sortMode==='name'} onChange={()=>changeSortMode('name')}/>
                             <label className="btn btn-secondary" htmlFor="sort-by-name">Name</label>
                             <input type="radio" className=" btn-check" name="btnradio" id="sort-by-price" autoComplete="off" checked={state.sortMode==='price'} onChange={()=>changeSortMode('price')}/>
                             <label className="btn btn-secondary" htmlFor="sort-by-price">Price</label>
+                            <input type="radio" className=" btn-check" name="btnradio" id="sort-by-discount" autoComplete="off" checked={state.sortMode==='discount'} onChange={()=>changeSortMode('discount')}/>
+                            <label className="btn btn-secondary" htmlFor="sort-by-discount">Discount</label>
                         </div>
                     </div>
                 </div>

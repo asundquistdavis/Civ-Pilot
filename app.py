@@ -1,6 +1,5 @@
 from flask import Flask, render_template, jsonify, request
 from db import Session, Player, engine, Game, json, get_or_create, AdvCard, GamePlayer
-import config 
 from auth import  validate_login, validate_register, authenticate_user, authorize_user, get_new_player, get_valid_player
 from exception import AuthError, PlayerNotFoundError, PlayerNotAutherizedError
 from assets import civs
@@ -9,8 +8,11 @@ from json import load
 
 production = bool('secret' in os.environ)
 
+if not production:
+    import config
+
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.environ['secret'] if production else config.secret_key
+app.config['SECRET_KEY'] = os.environ['secret'] if production else config.secret
 
 bundle = '\\static\\bundle.js'
 

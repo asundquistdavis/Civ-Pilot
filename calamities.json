@@ -1,4 +1,3 @@
-
 {
   "calamities": 
     [
@@ -7,7 +6,7 @@
         "level": 2,
         "tradable": true,
         "modifiers": [],
-        "additional": null,
+        "additional": "",
         "major": false,
         "text": "take 2 damage in total from coastal areas of your choice and lose 5 treasury tokens."
       },
@@ -16,7 +15,7 @@
         "level": 3,
         "tradable": true,
         "modifiers": [],
-        "additional": null,
+        "additional": "",
         "major": false,
         "text": "lose 10 treasury tokens."
       },
@@ -25,7 +24,7 @@
         "level": 4,
         "tradable": true,
         "modifiers": [],
-        "additional": null,
+        "additional": "",
         "major": false,
         "text": "reduce 1 of your cities and lose 5 treasury tokens."
       },
@@ -34,7 +33,7 @@
         "level": 5,
         "tradable": true,
         "modifiers": [],
-        "additional": null,
+        "additional": "",
         "major": false,
         "text": "destroy 1 of your cities. you may choose to pay 10 treasury to prevent this."
       },
@@ -43,7 +42,7 @@
         "level": 6,
         "tradable": true,
         "modifiers": [],
-        "additional": null,
+        "additional": "",
         "major": false,
         "text": "take 5 damage."
       },
@@ -52,7 +51,7 @@
         "level": 7,
         "tradable": true,
         "modifiers": [],
-        "additional": null,
+        "additional": "",
         "major": false,
         "text": "destroy 1 of your cities"
       },
@@ -61,7 +60,7 @@
         "level": 8,
         "tradable": true,
         "modifiers": [],
-        "additional": null,
+        "additional": "",
         "major": false,
         "text": "discard 2 commodity cards of you choice. for each card you must discard, you may choose to pay 4 treasury tokens to prevent it. - water commidity cards may not be used."
       },
@@ -70,7 +69,7 @@
         "level": 9,
         "tradable": true,
         "modifiers": [],
-        "additional": null,
+        "additional": "",
         "major": false,
         "text": "destroy 1 of your coastal cities and lose 5 treasury tokens."
       },

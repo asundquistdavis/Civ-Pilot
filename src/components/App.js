@@ -22,7 +22,7 @@ const App = () => {
         graphMode: 'score',
         infoMode: 'pop',
         calamities: null,
-        infoFilter: {tradable: false, major: true},
+        infoSort: '',
         infoColor: {green: false, blue: false, orange: false, yellow: false, red: false},
         infoSort: null,
         infoQuery: '',
@@ -141,6 +141,15 @@ const App = () => {
             setState({...state, validGameId});
         }
     }, [cd.hostName]);
+
+    useEffect(()=>{
+        if (player && game && game.turnNumber) {
+            const interval = setInterval(()=>{
+                getGameInfo();
+            }, 1000);
+            return () => clearInterval(interval);
+        }
+    }, [game, state.viewingMode]);
 
     const Loading = () => {
     
