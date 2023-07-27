@@ -17,11 +17,11 @@ div.advTitle {
     border-radius: 5px;
     width: 100%;
     font-weight: 500;
-    color:white;
+    color: black;
     font-size: 1.25rem;
     line-height: 1;
-    padding-top: 3px;
-    padding-bottom: 3px;
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
 
 div.advPointsRow {
@@ -41,6 +41,7 @@ div.advCostCircle {
     display: flex;
     align-items: center;
     justify-content: center;
+    font-weight: 750;
 }
 
 div.advPointsSqaure {
@@ -54,6 +55,11 @@ div.advPointsSqaure {
     display: flex;
     align-items: center;
     justify-content: center;
+    color: #eabb34;
+    font-weight: bold;
+    font-size: 1.5rem;
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: black;
 }
 
 div.advBody {

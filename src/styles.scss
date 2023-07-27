@@ -31,6 +31,7 @@ div.price-circle {
     background-color: #f5f8f9;
     text-align: center;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     height: 35px;
@@ -40,12 +41,20 @@ div.price-circle {
     margin-right: 3px;
     padding: auto;
     font-weight: 750;
+    overflow: hidden;
 };
 
 div.price-lower {
-    text-decoration: line-through;
-    text-decoration-color: red;
-    text-decoration-thickness: rgb(255, 0, 0, .3);
+    background-color: rgba(0,0,0,0.2);
+    padding: 0;
+    line-height: .9;
+}
+
+div.price-lower::before {
+    padding: 0;
+    margin: 0;
+    font-size: small;
+    content: 'was';
 }
 
 div.points-square {

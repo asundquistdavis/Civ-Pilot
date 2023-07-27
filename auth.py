@@ -14,7 +14,6 @@ def validate_register(data:'dict[str, str]')->'tuple[str, str, str]':
         if players and username in (usernames:=[player.username for player in players]): raise UserNameTakenError
     return username, password
 
-
 def authorize_user(key:str, username:str, password:str)->dict:
     salt = randint(0, 1000000000000000000)
     hash = encode({'password': password, 'salt': salt}, key=key, algorithm='HS256')

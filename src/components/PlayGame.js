@@ -229,7 +229,7 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
                     {/* symbols */}
                     <td className="p-0 align-middle" >{symbols.join(' ')}</td>
                     {/* name/ civ */}
-                    <td className="p-0 align-middle" ><button className="h-100 col-12 p-0 border border-dark" style={civStyle} onClick={()=>handlePlayerSelect(playerRow)}><h6 className="p-0 m-0">{capitalize(playerRow.username)}</h6><p className="p-0 m-0">{capitalize(playerRow.civ)}</p></button></td>
+                    <td className="p-0 align-middle" ><button className="btn btn-sm col-12 p-0 border border-dark" style={civStyle} onClick={()=>handlePlayerSelect(playerRow)}><h6 className="p-0 m-0">{capitalize(playerRow.username)}</h6><p className="p-0 m-0">{capitalize(playerRow.civ)}</p></button></td>
                     {/* cities */}
                     <td className="p-0 align-middle"><input className="cities p-0 m-0" type="number" onChange={(event)=>handleCitiesChange(event, playerRow)} disabled={!(playerIsRow || isServerHost)} value={playerRow.cities}/></td>
                     {/* census */}
@@ -347,6 +347,10 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
                 const price = state.viewingMode==='browser'? costFor(card, state.viewingPlayer): card.price;
                 const otherPrice = state.viewingMode==='browser'? costFor(otherCard, state.viewingPlayer): otherCard.price;
                 return (state.sortAcs? otherPrice - price: price - otherPrice)}):
+            state.sortMode==='discount'? [...advCardsFilterText].sort((card, otherCard)=>{
+                const discount = state.viewingMode==='browser'? card.price-costFor(card, state.viewingPlayer): card.price;
+                const otherDiscount = state.viewingMode==='browser'? otherCard.price-costFor(otherCard, state.viewingPlayer): otherCard.price;
+                return (state.sortAcs? discount - otherDiscount: otherDiscount - discount)}):
             advCardsFilterText
         );
 
