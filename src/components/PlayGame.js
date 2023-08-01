@@ -374,13 +374,7 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
         const numberOfSelected = state.viewingPlayer.advCardsSelection.length
 
         return (<div>
-            <nav className="navbar sticky-top navbar-light bg-light border-dark border-bottom mx-n2">
-                {/* <div className="row flex-row justify-content-start align-items-center mb-1 d-none d-md-flex w-100 p-0 m-0 mx-2"> */}
-                    {/* cart price */}
-                    {/* <div className="price-circle ms-1">{cartPrice}</div> */}
-                    {/* confirm cart */}
-                    {/* <div className="col-6 p-0 m-0 text-start"><button className="btn btn-light btn-small" disabled={!isServerHost} onClick={handlePurchaseSubmit}>{capitalize(state.viewingPlayer.username)}'s Cart</button></div> */}
-                {/* </div> */}
+            <nav className="navbar sticky-top navbar-light bg-light border-dark border-bottom mx-n2 p-0 pt-2">
                 <div className="row flex-sm-row-reverse flex-row mb-1 align-items-bottom w-100 p-0 m-0 mx-2">
                     <div className="col-12 mb-2 m-0 p-0">
                         <div className="row flex-row justify-content-between justify-content-md-end align-items-center p-0 m-0">

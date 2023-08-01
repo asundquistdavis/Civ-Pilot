@@ -22,10 +22,10 @@ const App = () => {
         graphMode: 'score',
         infoMode: 'pop',
         calamities: null,
-        infoSort: '',
+        infoSort: 'name',
         infoColor: {green: false, blue: false, orange: false, yellow: false, red: false},
-        infoSort: null,
         infoQuery: '',
+        rules: null,
     });
 
     // client data
@@ -101,6 +101,11 @@ const App = () => {
         .catch(error=>setCD({...cd, errorMessage: error.response.data.message}));
     };
 
+    const getRules = () => {
+        axios.get('api/rules')
+        .then(response=>setState({...state, rules: response.data.rules}))
+    }
+
     const getHistory = () => {
         const data = {
             playerId: player.id,
@@ -128,6 +133,7 @@ const App = () => {
         getAdvCards();
         getCivilizations();
         getCalamities();
+        getRules();
     }, [player]);
 
     useEffect(()=>{
@@ -149,7 +155,7 @@ const App = () => {
             }, 1000);
             return () => clearInterval(interval);
         }
-    }, [game, state.viewingMode]);
+    }, [game]);
 
     const Loading = () => {
     

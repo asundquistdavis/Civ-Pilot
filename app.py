@@ -99,6 +99,11 @@ def get_advcards():
         advcards = AdvCard.all(session)
         return jsonify({'advCards': [json(card) for card in advcards]})
     
+@app.route('/api/rules')
+def get_rules():
+    with open('rules.json') as rules:
+        return jsonify(load(rules))
+    
 @app.route('/api/history', methods=['POST'])
 def history():
     data:dict = request.json

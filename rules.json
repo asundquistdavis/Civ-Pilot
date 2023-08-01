@@ -1,0 +1,161 @@
+{
+    "rules": [
+        {
+            "number": 1,
+            "title": "upkeep",
+            "texts": [
+                {
+                    "subtitle": "tax collection",
+                    "order": "simultaneous",
+                    "text": "All players must transfer a number of population tokens from stock to treasury equal to their tax rate for each of their cities on the map board. The default tax rate is 2, but this can be adjusted by Civilization Advances. Players cannot choose to refrain from collecting tax."
+                },
+                {
+                    "subtitle": "tax revolts",
+                    "order": "AST rank",
+                    "text": "If 1 or more players do not have sufficient stock to collect their taxes, revolts occur. All other players finish tax collection. Then players with insufficient tokens in stock move all of their stock tokens to treasury. For each city that this player can not fully collect tax for, the beneficiary may choose and annex 1 of their cities. This beneficiary does not collect taxes this turn for any cities gained this way. If the beneficiary does not have sufficient cities a next beneficiary is selected. If all players have 9 cities, remaining cities are destroyed instead."
+                },
+                {
+                    "subtitle": "population expansion",
+                    "order": "AST rank",
+                    "text": "Each player places population tokens from stock in each area containing tokens according to the following: 1 token in each area containing 1 of their tokens and 2 tokens in all areas containing 2 or more of their tokens."
+                },
+                {
+                    "subtitle": "census",
+                    "order": "AST rank",
+                    "text": "After completing all expansion, all players count their tokens on the board and adjust their census markers accordingly. Cities and ships do not count as population."
+                }
+            ]
+        },
+        {
+            "number": 2,
+            "title": "movement and conflict",
+            "texts": [
+                {
+                    "subtitle": "movement",
+                    "order": "census (largest to smallest), AST rank",
+                    "text": "Players may move each of their tokens on the board either 1 step to an area adjacent by land or onto a ship and may move each of their ships 4 steps. At any time during a players movemnet phase trun, that player may choose to construct ships. This can only be done in coastal areas containing 1 or more of his tokens. A player can have no more than 4 ships at any time. Constructing a ship costs 2 tokens which can be paid for by using treasury and/or by destroying tokens from the same area as the ship. Ships may be used the turn they are built. As soon as a player wants to use a ship that was built on a differenet turn, they must either pay 1 treasury token or destroy 1 of their tokens from anywhere on the board to maintain the ship. This must be done for each ship the player wished to use and can be done for ships the player does not wish to use this turn. Any ships not maintained are destroyed at the end of the players movement phase turn. Players may move each of their ships a maximum of 4 areas by water per turn. By default, ships cannot be moved through open sea areas. At any time during the ship's movement, the ship may embark or disambark any number of tokens, but the ship can not carry more than the carrying capacity. The default carrying capacity is 5. At the ships final destination, all tokens automatically disembark in that area. Tokens may move by land or by ship but not both. By default, ships do not engage in conflict or block the mmovement of other ships."
+                },
+                {
+                    "subtitle": "token conflict resolution",
+                    "order": "simultaneous",
+                    "text": ""
+                },
+                {
+                    "subtitle": "city conflict resolution",
+                    "order": "AST rank",
+                    "text": ""
+                }
+            ]          
+        },
+        {
+            "number": 3,
+            "title": "cities and support",
+            "texts": [
+                {
+                    "subtitle": "city construction",
+                    "order": "AST rank",
+                    "text": ""
+                },
+                {
+                    "subtitle": "surplus population removal",
+                    "order": "AST rank",
+                    "text": ""
+                },
+                {
+                    "subtitle": "city support",
+                    "order": "AST rank",
+                    "text": ""
+                }
+            ]            
+        },
+        {
+            "number": 4,
+            "title": "trade",
+            "texts": [
+                {
+                    "subtitle": "primary trade card acquisition",
+                    "order": "cities (fewest to most), AST rank",
+                    "text": ""
+                },
+                {
+                    "subtitle": "additional trade card acquisition",
+                    "order": "cities (fewest to most), AST rank",
+                    "text": ""
+                },
+                {
+                    "subtitle": "trade",
+                    "order": "simultaneous",
+                    "text": ""
+                }
+            ]            
+        },
+        {
+            "number": 5,
+            "title": "calamities and special abilities",
+            "texts": [
+                {
+                    "subtitle": "calamity selection",
+                    "order": "simultaneous",
+                    "text": ""
+                },
+                {
+                    "subtitle": "minor calamity resolution",
+                    "order": "simultaneous",
+                    "text": ""
+                },
+                {
+                    "subtitle": "major calamity resolution",
+                    "order": "calamity rank (smallest to largest), non-tradable before tradable",
+                    "text": ""
+                },
+                {
+                    "subtitle": "special abilities",
+                    "order": "AST position, AST rank",
+                    "text": ""
+                },
+                {
+                    "subtitle": "surplus population removal",
+                    "order": "simultaneous",
+                    "text": ""
+                },
+                {
+                    "subtitle": "minor calamity resolution",
+                    "order": "simultaneous",
+                    "text": ""
+                }
+            ]            
+        },
+        {
+            "number": 6,
+            "title": "advancement cards",
+            "texts": [
+                {
+                    "subtitle": "advancement card acquisition",
+                    "order": "AST position, AST rank",
+                    "text": ""
+                }
+            ]            
+        },
+        {
+            "number": 7,
+            "title": "cleenup",
+            "texts": [
+                {
+                    "subtitle": "AST position alteration",
+                    "order": "AST rank",
+                    "text": ""
+                },
+                {
+                    "subtitle": "reshuffling trade cards",
+                    "order": "simultaneous",
+                    "text": ""
+                },
+                {
+                    "subtitle": "end of game",
+                    "order": "simultaneous",
+                    "text": ""
+                }
+            ]
+        }
+    ]
+}
