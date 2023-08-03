@@ -8,7 +8,7 @@ const capitalize = (str) => str? str.charAt(0).toUpperCase() + str.slice(1): str
 const title = (str) => str.split(' ').map(capitalize).join(' ')
 const sentance = (str) => str?.split('. ')?.map(capitalize).join('. ') || capitalize(str);
 
-const PlayGame = (state, token, cd, player, game, civilizations, advCards, setState, setToken, setCD, setPlayer, setGame, setCivilizations, setAdvCards, history, setHistory) => {
+const PlayGame = (state, token, cd, player, game, civilizations, advCards, setState, setToken, setCD, setPlayer, setGame, setCivilizations, setAdvCards, history, setHistory, rules, calamities) => {
 
     const colors = {'orange': '#ee8222',
         'yellow': '#f7cb0d',
@@ -541,7 +541,7 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
         :state.viewingMode==='history'?
             <History state={{player, history, state}}/>
         :state.viewingMode==='info'?
-            Info(state, setState, advCards)
+            Info(state, setState, advCards, rules, calamities)
         :Scoreboard()}
     </div>);
 };

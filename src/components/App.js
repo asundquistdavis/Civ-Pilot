@@ -21,11 +21,9 @@ const App = () => {
         query: '',
         graphMode: 'score',
         infoMode: 'pop',
-        calamities: null,
         infoSort: 'name',
         infoColor: {green: false, blue: false, orange: false, yellow: false, red: false},
         infoQuery: '',
-        rules: null,
     });
 
     // client data
@@ -46,6 +44,8 @@ const App = () => {
     const [advCards, setAdvCards] = useState([]);
     const [usernames, setUsernames] = useState([]);
     const [history, setHistory] = useState(null);
+    const [rules, setRules] = useState(null);
+    const [calamities, setCalamities] = useState(null);
 
     const getUsernames = async () => {
         axios.get('/api/usernames')
@@ -92,7 +92,9 @@ const App = () => {
 
     const getCalamities = () => {
         axios.get('api/calamities')
-        .then(response=>setState({...state, calamities: response.data.calamities}))
+        .then(async response=>{
+            setCalamities(response.data.calamities);
+        })
     }
 
     const getAdvCards = () => {
@@ -103,8 +105,10 @@ const App = () => {
 
     const getRules = () => {
         axios.get('api/rules')
-        .then(response=>setState({...state, rules: response.data.rules}))
-    }
+        .then(response=>{
+            setRules(response.data.rules);
+        })
+    };
 
     const getHistory = () => {
         const data = {
@@ -149,13 +153,18 @@ const App = () => {
     }, [cd.hostName]);
 
     useEffect(()=>{
-        if (player && game && game.turnNumber) {
+        if (!state.rules) getRules();
+        if (!state.calamities) getCalamities();
+    }, [state.rules, state.calamities]);
+
+    useEffect(()=>{
+        if (player && game && game.turnNumber && state.viewingMode!='info') {
             const interval = setInterval(()=>{
                 getGameInfo();
-            }, 1000);
+            }, 5000);
             return () => clearInterval(interval);
         }
-    }, [game]);
+    }, [game, state.viewingMode]);
 
     const Loading = () => {
     
@@ -191,7 +200,7 @@ const App = () => {
                     :(player && (!game || (game && !game.turnNumber)))?
                         NewGame(state, token, cd, player, game, civilizations, advCards, setState, setToken, setCD, setPlayer, setGame, setCivilizations, setAdvCards, usernames, setUsernames)
                     :(player && game && game.turnNumber)?
-                        PlayGame(state, token, cd, player, game, civilizations, advCards, setState, setToken, setCD, setPlayer, setGame, setCivilizations, setAdvCards, history, setHistory)
+                        PlayGame(state, token, cd, player, game, civilizations, advCards, setState, setToken, setCD, setPlayer, setGame, setCivilizations, setAdvCards, history, setHistory, rules, calamities)
                     :cd.errorMessage?
                         Error():
                     Loading()}

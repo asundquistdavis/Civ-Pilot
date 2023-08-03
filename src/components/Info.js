@@ -13,9 +13,7 @@ const colors = {'orange': '#ee8222',
 'blue': '#0282CF',
 'green': '#40b24c',}
 
-const Info = (state, setState, advCards) => {
-
-    console.log(state);
+const Info = (state, setState, advCards, rules, calamities) => {
 
     const handleCardSelect = (render, card) => {
         const alert = {
@@ -23,8 +21,6 @@ const Info = (state, setState, advCards) => {
         };
         setState({...state, alert: alert})
     };
-
-    const calamities = state.calamities;
 
     const renderCalamityCard = (calamity, key) => {return(
         
@@ -74,7 +70,7 @@ const Info = (state, setState, advCards) => {
         const query = state.infoQuery;
         const colors = state.infoColor;
         const sort = state.infoSort;
-        const noColors = Object.values(colors).every(color=>!color);
+        const noColors = colors? Object.values(colors).every(color=>!color): false;
         const advCardsP = advCards
         .filter(card=>
             (noColors||Object.entries(colors).reduce((any, [group, filter])=>{return any||(filter&&(card.pgroup===group||card.sgroup===group))},false)) && 
@@ -132,7 +128,7 @@ const Info = (state, setState, advCards) => {
     const Cal = () => {
         
         const query = state.infoQuery;
-        const calamityCards = state.calamities?.filter(
+        const calamityCards = calamities?.filter(
             card=>(!query || card.name.includes(query) || (card.text.includes(query) || card.level===query || card.additional.includes(query))) || card.modifiers.filter(modifier=>modifier.text.includes(query)).length>0)
         .sort((card, otherCard)=>(card.level-otherCard.level)*10+(otherCard.major? (card.major? 0: 1): otherCard.tradable? (card.tradable? 0: 1): -1));
 
@@ -148,23 +144,21 @@ const Info = (state, setState, advCards) => {
 
         const renderPop = (phase, key) => {
 
-            console.log(phase);
             const titleText = title(phase.title);
             const renderSubphase = (subphase, key) => <div key={key}>
                 <h5>{title(subphase.subtitle)}</h5>
                 <p><i>Order: {subphase.order}</i></p>
-                <p>{subphase.text}</p>
+                <p>{sentance(subphase.text)}</p>
             </div>
             const header = 'header'+phase.number;
-            console.log(header);
             const body = 'body'+phase.number;
             return(<div className="accordion-item" key={key}>
                 <h2 className="accordion-header"  id={header}>
-                    <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target={'#'+body} aria-aria-expanded="false" aria-aria-controls={body}>
+                    <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target={'#'+body}>
                         <h5>{titleText}</h5>
                     </button>
                 </h2>
-                <div className="accordion-collapse collapse text-start" id={body} aria-aria-labelledby={header} data-bs-parent={'#'+parent}>
+                <div className="accordion-collapse collapse text-start" id={body} data-bs-parent={'#'+parent}>
                     <div className="accordion-body">
                         {phase.texts.map(renderSubphase)}
                     </div>
@@ -175,24 +169,18 @@ const Info = (state, setState, advCards) => {
 
         return (
             <div className="accordion" id={parent}>
-                {state?.rules.map(renderPop)}    
+                {rules?.map(renderPop)}    
             </div>)
     }
 
     return (<div className="my-2">
-        <div className="d-flex mb-2 btn-group" role="group">
-            <div className="">
-                <input type="radio" className="btn-check" id="pop" name="btnradio" checked={state.infoMode==='pop'} onChange={()=>setState({...state, infoMode: 'pop'})}/>
-                <label className="btn btn-outline-dark" htmlFor="pop">Rules</label>
-            </div>
-            <div className="ms-1">
-                <input type="radio" className="btn-check" id="cal" name="btnradio" checked={state.infoMode==='cal'} onChange={()=>setState({...state, infoMode: 'cal'})}/>
-                <label className="btn btn-outline-dark" htmlFor="cal">Calamities</label>
-            </div>
-            <div className="ms-1">
-                <input type="radio" className="btn-check" id="adv" name="btnradio" checked={state.infoMode==='adv'} onChange={()=>setState({...state, infoMode: 'adv'})}/>
-                <label className="btn btn-outline-dark" htmlFor="adv">Advancements</label>
-            </div>
+        <div className="row flex-row d-flex m-0 p-0 mb-2">
+            <input type="checkbox" className="btn-check" id="pop" checked={state.infoMode==='pop'} onChange={()=>setState({...state, infoMode: 'pop'})}/>
+            <label className="col btn btn-outline-dark me-1" htmlFor="pop">Rules</label>
+            <input type="checkbox" className="btn-check" id="cal" checked={state.infoMode==='cal'} onChange={()=>setState({...state, infoMode: 'cal'})}/>
+            <label className="col btn btn-outline-dark me-1" htmlFor="cal">Calamities</label>    
+            <input type="checkbox" className="btn-check" id="adv" checked={state.infoMode==='adv'} onChange={()=>setState({...state, infoMode: 'adv'})}/>
+            <label className="col btn btn-outline-dark me-auto" htmlFor="adv">Advancements</label>
         </div>
         {state.infoMode==='cal'?
             Cal()
