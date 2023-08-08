@@ -198,6 +198,7 @@ class GamePlayer(Base):
     # player state variables
     selection_ready:Mapped[bool] = mapped_column(Boolean, default=False)
     has_purchased:Mapped[bool] = mapped_column(Boolean, default=False)
+    score_offset:Mapped[int] = mapped_column(Integer, default=0)
 
     # player properties
     @property
@@ -213,8 +214,10 @@ class GamePlayer(Base):
     @property
     def score(self)->int:
         cards_score = sum(card.adv_card.points for card in self.adv_cards)
+        cities_score = self.cities
         ast_score = 5*self.ast_position
-        total_score = cards_score + ast_score
+        offset_score = self.score_offset
+        total_score = cards_score + ast_score + offset_score + cities_score
         return total_score
     @property
     def civ_info(self)->dict: return next(filter(lambda civ: civ['name']==self.civ, civs)) if self.civ else None

@@ -224,6 +224,23 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
                 };
             };
     
+            const handleScoreChange = (event, playerRow) => {
+                const score = (!isNaN(event.target.value) && !isNaN(parseInt(event.target.value)))? (parseInt(event.target.value)): 0;
+                console.log(score);
+                const data = {
+                    type: 'scoreChange',
+                    playerId: player.id,
+                    targetPlayerId: playerRow.id,
+                    gameId: game.id,
+                    token,
+                    score
+                };
+                if (playerIsRow || isServerHost) {
+                    axios.post('/api/gameaction', data)
+                    .then(response=>setGame(response.data.game));
+                };
+            };
+
             return (
                <tr className="p-0" key={key}>
                     {/* symbols */}
@@ -235,7 +252,7 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
                     {/* census */}
                     <td className="p-0 align-middle"><input className="census p-0 m-0" type="number" onChange={(event)=>handleCensusChange(event, playerRow)} disabled={!(playerIsRow || isServerHost)} value={playerRow.census}/></td>
                     {/* score */}
-                    <td className="p-0 align-middle" ><div className={'score px-1 mx-auto ' + (playerRow.canAdvance? 'advancing': '')}>{playerRow.score}</div></td>
+                    <td className="p-0 align-middle" ><input className={'score p-0 m-0 ' + (playerRow.canAdvance? 'advancing': '')} type="text" inputMode="numeric" onChange={event=>handleScoreChange(event, playerRow)} disabled={!(playerIsRow || isServerHost)} value={playerRow.score}/></td>
                 </tr>
             );
         };

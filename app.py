@@ -81,6 +81,7 @@ def game_action():
             if type=='creditChange' and requestingPlayer.game.is_host: targetPlayer.change_credits(session, data['credits'])
             if type=='censusChange': targetPlayer.game.census = data['census']; session.add(targetPlayer); session.commit()
             if type=='citiesChange': targetPlayer.game.cities = data['cities']; session.add(targetPlayer); session.commit()
+            if type=='scoreChange': targetPlayer.game.score_offset = targetPlayer.game.score_offset + data['score'] - targetPlayer.game.score; session.add(targetPlayer); session.commit(); print(targetPlayer.game.score_offset)
             if type=='playerAdvance': targetPlayer.game.can_advance = not targetPlayer.game.can_advance; session.add(targetPlayer); session.commit()
             if type=='endTurn' and requestingPlayer.game.is_host: requestingPlayer.game.game_info.end_turn(session, data)
             game:Game = requestingPlayer.game.game_info

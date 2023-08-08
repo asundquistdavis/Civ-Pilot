@@ -261,10 +261,11 @@ div.score-advance {
     width: fit-content;
 };
 
-div.score {
+input.score {
     border: solid black 2px;
     height: 35px;
-    width: fit-content;
+    width: 50px;
+    padding: 0;;
     margin: 0;  
     text-align: center;
     background-color: #f5f8f9;
@@ -276,7 +277,7 @@ div.score {
     line-height: 120%;
 };
 
-div.advancing {
+input.advancing {
     box-shadow: 0 0 15px gold;
 };
 
