@@ -1,11 +1,22 @@
 from sqlalchemy import create_engine, Integer, String, ForeignKey, JSON, Boolean
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, Session, backref
 from typing import Any, Protocol, List
-from assets import civs, advancement_cards, adv_colors
 from exception import PlayerNotAutherizedError, GamePlayersNotReady, IvalidRequestError, GameInProgressError
 from collections import Counter
 from jwt import decode
 import os
+from json import load
+
+civs = {}
+with open('assets/civs.json', 'r') as civs_file:
+    civs = load(civs_file)['civs']
+
+# adv card colors
+adv_colors = {'orange': '#ee8222',
+'yellow': '#f7cb0d',
+'red': '#ec232e',
+'blue': '#0070b5',
+'green': '#40b24c'}
 
 # set to False for production
 production = bool('secret' in os.environ)
@@ -16,7 +27,7 @@ if not production: import config
 local_url = 'sqlite:///db.sqlite'
 protical, user, password, host, port, database = (os.environ['protical'], os.environ['user'], os.environ['password'], os.environ['host'], os.environ['port'], os.environ['database']) if production else (config.protical, config.user, config.password, config.host, config.port, config.database)
 production_url = f'{protical}://{user}:{password}@{host}:{port}/{database}'
-url = local_url
+url = production_url
 engine = create_engine(url)
 
 def get_or_create(session:Session, Table:type, return_type=False, literal_only:bool=False, get_only=False, **conditions)->Any:
@@ -532,4 +543,6 @@ class Game(Base):
 if __name__ == '__main__':
     Base.metadata.create_all(engine)
     with Session(engine) as session:
-        AdvCard.create_all(session, advancement_cards)
+        with open('assets/advancements.json', 'r') as adv_file:
+            advancement_cards = load(adv_file)['advancements']
+            AdvCard.create_all(session, advancement_cards)

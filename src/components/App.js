@@ -83,7 +83,9 @@ const App = () => {
 
     const getCivilizations = () => {
         axios.get('api/civilizations')
-        .then(response=>setCivilizations(response.data.civilizations))
+        .then(response=>{
+            setCivilizations(response.data.civs)
+        })
         .catch(error=>{
             const message = error.response.data.message;
             setCD({...cd, errorMessage: message})
