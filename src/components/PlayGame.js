@@ -252,7 +252,7 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
                     {/* census */}
                     <td className="p-0 align-middle"><input className="census p-0 m-0" type="number" onChange={(event)=>handleCensusChange(event, playerRow)} disabled={!(playerIsRow || isServerHost)} value={playerRow.census}/></td>
                     {/* score */}
-                    <td className="p-0 align-middle" ><input className={'score p-0 m-0 ' + (playerRow.canAdvance? 'advancing': '')} type="text" inputMode="numeric" onChange={event=>handleScoreChange(event, playerRow)} disabled={!(playerIsRow || isServerHost)} value={playerRow.score}/></td>
+                    <td className="p-0 align-middle" ><input className={'score p-0 m-0 ' + (playerRow.canAdvance? 'advancing': '')} type="text" inputMode="numeric" onChange={event=>handleScoreChange(event, playerRow)} disabled={!isServerHost} value={playerRow.score}/></td>
                 </tr>
             );
         };
