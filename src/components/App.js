@@ -149,7 +149,7 @@ const App = () => {
     useEffect(()=>{
         if (cd.hostName) {
             getUsernames()
-            const validGameId = usernames.filter(user=>user.username===cd.hostName)?.[0]?.hostedGameId
+            const validGameId = usernames.filter(user=>user.username===cd.hostName.toLowerCase())?.[0]?.hostedGameId
             setState({...state, validGameId});
         }
     }, [cd.hostName]);

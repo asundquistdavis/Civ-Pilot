@@ -67,7 +67,7 @@ const Info = (state, setState, advCards, rules, calamities) => {
 
     const Adv = () => {
         
-        const query = state.infoQuery;
+        const query = state.infoQuery.toLowerCase();
         const colors = state.infoColor;
         const sort = state.infoSort;
         const noColors = colors? Object.values(colors).every(color=>!color): false;
@@ -127,7 +127,7 @@ const Info = (state, setState, advCards, rules, calamities) => {
 
     const Cal = () => {
         
-        const query = state.infoQuery;
+        const query = state.infoQuery.toLowerCase();
         const calamityCards = calamities?.filter(
             card=>(!query || card.name.includes(query) || (card.text.includes(query) || card.level===query || card.additional.includes(query))) || card.modifiers.filter(modifier=>modifier.text.includes(query)).length>0)
         .sort((card, otherCard)=>(card.level-otherCard.level)*10+(otherCard.major? (card.major? 0: 1): otherCard.tradable? (card.tradable? 0: 1): -1));
