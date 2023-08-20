@@ -142,7 +142,7 @@ const App = () => {
         getRules();
     }, [player]);
 
-    useEffect(()=>{
+    useEffect (()=>{
         setState({...state, viewingPlayer: game?.players?.filter(player=>player.id===state?.viewingPlayer?.id)[0]})
     }, [game]);
 

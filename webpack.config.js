@@ -1,16 +1,18 @@
 const path = require('path');
 const autoprefixer = require('autoprefixer');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
+const webpack = require('webpack');
 
 module.exports = {
     devtool: 'eval-source-map',
-    entry: './src/index.js',
+    entry: {index: './frontend/index/index.js', auth: './frontend/auth/index.js', playgame: './frontend/playgame/index.js'},
     output: {
-        path: path.join(__dirname, '/static'),
-        filename: 'bundle.js'
+        path: path.join(__dirname, '.\\static'),
+        filename: '[name].js'
     },
     plugins: [
         new HTMLWebpackPlugin({template: './templates/index.html'}),
+        // new webpack.optimize.MinChunkSizePlugin({minChunkSize: 1})
         // new HTMLWebpackPlugin({favicon: "./src/favicon.ico"})
     ],
     module: {

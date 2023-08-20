@@ -1,9 +1,14 @@
 from flask import Flask, render_template, jsonify, request
-from db import Session, Player, engine, Game, json, get_or_create, AdvCard, GamePlayer
+from db import Session, Player, engine, Game, get_or_create, AdvCard, GamePlayer
 from auth import  validate_login, validate_register, authenticate_user, authorize_user, get_new_player, get_valid_player
 from exception import AuthError, PlayerNotFoundError, PlayerNotAutherizedError
 import os
 from json import load
+
+from backend.auth import get_player, get_token, create_player
+from backend.playgame import add_game, get_all_games, host_game
+from backend.db import DB, json, main
+from backend.exception import AppError
 
 civs = {}
 with open('assets/civs.json', 'r') as civs_file:
@@ -17,21 +22,11 @@ if not production:
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ['secret'] if production else config.secret
 
-bundle = '\\static\\bundle.js'
+bundle = '\\static\\main.js'
 
-@app.route('/')
-def index():
+@app.route('/v1.0')
+def index_old():
     return render_template('index.html', bundle=bundle)
-
-@app.route('/api/player', methods=['POST'])
-def get_player():
-    data:dict = request.json
-    key = app.config['SECRET_KEY']
-    try: 
-        with Session(engine) as session: 
-            player = get_new_player(session, key, data)
-            return jsonify({'player': json(player, parent='info')})
-    except AuthError as error: return jsonify(error.dict()), error.STATUS_CODE
 
 @app.route('/api/game', methods=['POST'])
 def game():
@@ -133,5 +128,62 @@ def login():
     except AuthError as error: return (error.dict()), error.STATUS_CODE
     return jsonify(token)
 
+@app.route('/')
+def page_index():
+    bundle = '\\static\\index.js'
+    return render_template('index.html', bundle=bundle)
+
+@app.route('/page/auth')
+def page_auth():
+    bundle = '\\static\\auth.js'
+    return render_template('index.html', bundle=bundle)
+
+@app.route('/page/play')
+def page_play():
+    bundle = '\\static\\playgame.js'
+    return render_template('index.html', bundle=bundle)
+
+@app.route('/api/public/token', methods=['POST'])
+def api_token():
+    data = request.json
+    with DB() as db:
+        if data['register']: create_player(db, data)
+        try: token = get_token(db, data)
+        except AppError as error: return jsonify(json(error))
+        return jsonify({'token': token})
+
+@app.route('/api/public/player', methods=['POST'])
+def api_player():
+    data = request.json
+    with DB() as db:
+        try: player = get_player(db, data)
+        except AppError as error: return jsonify(json(error))
+
+        return jsonify({'player': json(player)})
+    
+@app.route('/api/public/game/add', methods=['POST'])
+def api_add_game():
+    data:dict = request.json
+    with DB() as db:
+        try: player = add_game(db, data)
+        except AppError as error: return (json(error))
+        return jsonify({'player': json(player)})
+    
+@app.route('/api/public/game/host', methods=['POST'])
+def api_host_game():
+    data:dict = request.json
+    with DB() as db:
+        try: player = host_game(db, data)
+        except AppError as error: return jsonify(json(error))
+        return jsonify({'player': json(player)})
+    
+@app.route('/api/public/allgames')
+def api_all_games():
+    with DB() as db:
+        try: games = get_all_games(db)
+        except AppError as error: return jsonify(json(error))
+        return jsonify({'games': games})
+
 if __name__ == '__main__':
+    main()
     app.run(debug=True)

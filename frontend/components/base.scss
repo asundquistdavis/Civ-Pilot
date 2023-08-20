@@ -1,0 +1,26 @@
+
+$cdprimary: #FFF;
+$cdsecondary: #CBDFE8;
+$cdglobal: #F2EEE5;
+
+.bgPrimary {background-color: $cdprimary !important;}
+.bgSecondary {background-color: $cdsecondary !important;}
+.bgGlobal {background-color: $cdglobal !important;}
+
+$border-width: 1px;
+$border-width-thick: 5px;
+// $btn-bg: white;
+
+@import "bootstrap/scss/bootstrap";
+
+@each $breakpoint in map-keys($grid-breakpoints) {
+    @include media-breakpoint-up($breakpoint) {
+        $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+
+        .border#{$infix}-secondary { border: $border-width-thick solid $cdsecondary !important; }
+        .vh#{$infix}-100 { height: 100vh; }
+        .vh#{$infix}-auto { height: fit-content !important; }
+    }
+}
+
+.border-secondary { border: $border-width-thick solid $cdsecondary !important; }
