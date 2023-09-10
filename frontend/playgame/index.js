@@ -4,4 +4,4 @@ import PlayGame from "./PlayGame";
 import 'bootstrap';
 
 const root = createRoot(document.getElementById('root'));
-root.render(<StrictMode><PlayGame/></StrictMode>); 
+root.render(<StrictMode><PlayGame/></StrictMode>);

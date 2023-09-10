@@ -2,28 +2,29 @@ import React, { StrictMode, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import 'bootstrap';
 import Base from '../components/Base';
-import axios from "axios";
 
 const Index = () => {
 
-    const [onLoad, setOnLoad] = useState(true)
-    const [token, setToken] = useState(null);
+    const [state, setState] = useState({
+        onLoad: true,
+        token: null,
+        player: null,
+    });
 
     useEffect(()=>{
-        setOnLoad(false);
-        if (onLoad) {
+        if (state.onLoad) {
             const localToken = localStorage.getItem('token')
-            if (localToken != null) {setToken(localToken)}
+            if (localToken != null) {setState(state=>{return {...state, token: localToken}})}
             else {
-                console.log('no token');
                 window.location.replace('/page/auth');
             }
         };
+        setState(state=>{return {...state, onLoad: false}});
     }, [onload]);
 
     useEffect(()=>{
-        token? window.location.replace('/page/play'): null
-    }, [token]);
+        state.token? window.location.replace('/page/play'): null;
+    }, [state.token]);
 
     return (
         <Base>

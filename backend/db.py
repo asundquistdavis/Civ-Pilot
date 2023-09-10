@@ -6,6 +6,7 @@ from .models.Player import Player
 from .models.GamePlayer import GamePlayer, GPAdvancementCard, GPAdvancementCardSelection
 from .models.TurnPlayer import TurnPlayer, TPAdvancementCardHistory, TPAdvancementCardPurchase
 from .models.Calamity import Calamity, Occurance
+from .models.Civilization import Civilization
 from .models.AdvancementCard import Base
 
 class Table:
@@ -13,6 +14,7 @@ class Table:
         ...
 
 def json(table_instance:Table, flavor:str=None):
+    if table_instance == None: return None
     return table_instance.__json__(flavor)
 
 class DB(Session):

@@ -18,7 +18,7 @@ const ManageGames = (props) => {
             gameId: state.addGameId,
         };
         axios.post('/api/public/game/add', data)
-        .then(response=> console.log(response))//setState(state=>{return {...state, player: response.data.player}}));
+        .then(response=>setState(state=>{return {...state, player: response.data.player}}));
     };
 
     const hostGame = () => {

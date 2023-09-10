@@ -6,6 +6,14 @@ from .GamePlayer import GamePlayer
 from .TurnPlayer import TurnPlayer
 from .AdvancementCard import Base
 
+class Table:
+    def __json__(self, flavor=None):
+        ...
+
+def json(table_instance:Table, flavor:str=None):
+    if table_instance == None: return None
+    return table_instance.__json__(flavor)
+
 class Player(Base):
     """each entry represents a player"""
 
@@ -27,6 +35,7 @@ class Player(Base):
 
     def __json__(self, flavor=None): 
         return {
+            'id': self.id,
             'username': self.username,
-            'games': [info.__json__(flavor='player') for info in self.game_infos]
+            'games': [json(info, flavor='player') for info in self.game_infos],
         }

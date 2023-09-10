@@ -1,15 +1,20 @@
 
-$cdprimary: #FFF;
-$cdsecondary: #CBDFE8;
-$cdglobal: #F2EEE5;
+$bgprimary: #FFF;
+$bgsecondary: #CBDFE8;
+$bgglobal: #F2EEE5;
+$cprimary: #000;
+$csecondary: #3D85BB;
 
-.bgPrimary {background-color: $cdprimary !important;}
-.bgSecondary {background-color: $cdsecondary !important;}
-.bgGlobal {background-color: $cdglobal !important;}
+.bgPrimary {background-color: $bgprimary !important;}
+.bgSecondary {background-color: $bgsecondary !important;}
+.bgGlobal {background-color: $bgglobal !important;}
+.cPrimary {color: $cprimary !important;}
+.cSecondary {color: $csecondary !important;}
 
 $border-width: 1px;
 $border-width-thick: 5px;
-// $btn-bg: white;
+
+$widths: ('5': 5%, '10': 10%, '15': 15%);
 
 @import "bootstrap/scss/bootstrap";
 
@@ -17,10 +22,13 @@ $border-width-thick: 5px;
     @include media-breakpoint-up($breakpoint) {
         $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
 
-        .border#{$infix}-secondary { border: $border-width-thick solid $cdsecondary !important; }
+        .border#{$infix}-secondary { border: $border-width-thick solid $bgsecondary !important; }
         .vh#{$infix}-100 { height: 100vh; }
         .vh#{$infix}-auto { height: fit-content !important; }
+        @each $size, $width in $widths {
+            .w#{$infix}-#{$size} {width: $width !important;}
+        }
     }
 }
 
-.border-secondary { border: $border-width-thick solid $cdsecondary !important; }
+.border-secondary { border: $border-width-thick solid $bgsecondary !important; }
