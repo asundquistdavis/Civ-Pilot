@@ -21,10 +21,7 @@ const Auth = () => {
     }, [state.token]);
 
     return (
-        <Base>
-            <Header buttonL={buttonL()} text="Mega Civilization"/>
-            <Body state={state} setState={setState}/>
-        </Base>
+        <div className="text-start">auth</div>
     );
 };
 

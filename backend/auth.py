@@ -12,7 +12,7 @@ def get_token(db:DB, data:dict)->str:
     if not ('username' in data and 'password' in data): raise InvalidInput
     username, password = data['username'], data['password']
     # get db Player with corespounding username
-    player = db.get_or_create(Player, create=False, username=username.lower())
+    player = db.get_or_create(Player, create=False, username=username)
     # error if player does not exist
     if not player: raise NoPlayer
     # decode hashed password saved in db
@@ -28,7 +28,7 @@ def create_player(db:DB, data:dict)->None:
     if not ('username' in data and 'password' in data and 'passwordRepeat' in data): raise InvalidInput
     username, password, password_repeat = data['username'], data['password'], data['passwordRepeat']
     # check that username is unique
-    if db.get_or_create(Player, create=False, username=username.lower()): raise PlayerExists
+    if db.get_or_create(Player, create=False, username=username): raise PlayerExists
     # check passwords match
     if password != password_repeat: raise PasswordsDoNotMatch
     # hash password

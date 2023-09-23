@@ -5,7 +5,7 @@ const webpack = require('webpack');
 
 module.exports = {
     devtool: 'eval-source-map',
-    entry: {index: './frontend/index/index.js', auth: './frontend/auth/index.js', playgame: './frontend/playgame/index.js'},
+    entry: {index: './frontend/index.js'},
     output: {
         path: path.join(__dirname, '.\\static'),
         filename: '[name].js'
