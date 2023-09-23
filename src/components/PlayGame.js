@@ -561,6 +561,8 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
             Player()
         :state.viewingMode==='browser'?
             Browser()
+        :state.viewingMode==='wizard'?
+            Wizard()
         :state.viewingMode==='history'?
             <History state={{player, history, state}}/>
         :state.viewingMode==='info'?
