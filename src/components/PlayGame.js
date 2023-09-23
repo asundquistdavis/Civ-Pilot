@@ -2,7 +2,7 @@ import React from "react";
 import axios from "axios";
 import History from "./History";
 import Info from "./Info";
-import { CheckSquare, PlusSquare, StopBtn, BarChartLine, SkipEndBtn, XCircle, BoxArrowRight, Backspace, InfoSquare } from "react-bootstrap-icons";
+import { CheckSquare, PlusSquare, StopBtn, BarChartLine, SkipEndBtn, XCircle, BoxArrowRight, Backspace, InfoSquare, Stars } from "react-bootstrap-icons";
 
 const capitalize = (str) => str? str.charAt(0).toUpperCase() + str.slice(1): str;
 const title = (str) => str.split(' ').map(capitalize).join(' ')
@@ -290,6 +290,12 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
                     <span>
                         <button type="button" className="btn btn-small btn-dark p-1 m-0 me-1" onClick={()=>setState({...state, viewingMode: 'browser', viewingPlayer: game.players.filter(playerF=>playerF.id===player.id)[0]})}>
                             <PlusSquare width={25} height={25}/>
+                        </button>
+                    </span>
+                    {/* wizard */}
+                    <span>
+                        <button type="button" className="btn btn-small btn-dark p-1 m-0 me-1" onClick={()=>setState(state=>({...state, viewingMode: 'wizard', viewingPlayer: game.players.filter(playerF=>playerF.id===player.id)[0]}))}>
+                            <Stars width={25} height={25}/>
                         </button>
                     </span>
                     {/* history */}
