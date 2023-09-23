@@ -215,9 +215,9 @@ class GamePlayer(Base):
     def score(self)->int:
         cards_score = sum(card.adv_card.points for card in self.adv_cards)
         cities_score = self.cities
-        ast_score = 5*self.ast_position
+        # ast_score = 5*self.ast_position
         offset_score = self.score_offset
-        total_score = cards_score + ast_score + offset_score + cities_score
+        total_score = cards_score + offset_score + cities_score #+ ast_score - omitted for simplicity
         return total_score
     @property
     def civ_info(self)->dict: return next(filter(lambda civ: civ['name']==self.civ, civs)) if self.civ else None
