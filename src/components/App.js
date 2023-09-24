@@ -24,6 +24,9 @@ const App = () => {
         infoSort: 'name',
         infoColor: {green: false, blue: false, orange: false, yellow: false, red: false},
         infoQuery: '',
+        wizardFilter: {green: false, blue: false, orange: false, yellow: false, red: false},
+        wizardPrice: 100,
+        wizardType: 'costFor',
     });
 
     // client data

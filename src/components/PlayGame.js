@@ -109,7 +109,7 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
        
         return(
         <div className="col-6 col-sm-4 col-xl-3 p-1 m-0" key={key}>
-            <div className={'adv-card '+(cardIsOwned? 'owned-card-border': cardIsSelected? 'selected-card-border': 'default-card-border')}  onClick={()=>state.viewingMode==='browser'? handleCardSelected(card): handleCardRemove(card)}>
+            <div className={'adv-card '+(cardIsOwned? 'owned-card-border': cardIsSelected? 'selected-card-border': 'default-card-border')}  onClick={()=>(state.viewingMode==='browser'||state.viewingMode==='wizard')? handleCardSelected(card): handleCardRemove(card)}>
                 
                 {/* top half */}
                 <div className="card-top">
@@ -524,6 +524,117 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
             </div>
             <div className="row p-0 mx-n1">{playerHasCards? playersAdvCards.map(CivCard): <div className="my-3">Player has no cards</div>}</div>
         </div>)
+    };
+
+    const Wizard = () => {
+
+        const Types = () => {
+
+            const handlePriceChange = (event) => {
+                const value = parseInt(event.target.value)||0;
+                setState(state=>({...state, wizardPrice: value}));
+            };
+            return (<>
+                <nav className="navbar sticky-top navbar-light bg-light border-dark border-bottom mx-n2 p-0 pt-2">
+                    <div className="row flex-row d-flex p-0 m-0 justify-content-start align-items-center mx-1 mb-1 w-100">
+                        <span className="p-0 m-0 col-3 align-self-stretch pe-1">
+                            <button className={'btn btn-small btn-dark p-0 m-0 w-100 h-100 ' + (state.wizardType==='costFor'? 'checked': '')} onClick={()=>setState(state=>({...state, wizardType: 'costFor'}))}>
+                                Most Cards
+                            </button>
+                        </span>
+                        <span className="p-0 m-0 col-3 align-self-stretch pe-1">
+                            <button className={'btn btn-small btn-dark p-0 m-0 w-100 h-100 ' + (state.wizardType==='totalCredits'? 'checked': '')} onClick={()=>setState(state=>({...state, wizardType: 'totalCredits'}))}>
+                                Most Credits
+                            </button>
+                        </span>
+                        <span className="p-0 m-0 col-3 align-self-stretch pe-1">
+                            <button className={'btn btn-small btn-dark p-0 m-0 w-100 h-100 ' + (state.wizardType==='pointPerCostFor'? 'checked': '')} onClick={()=>setState(state=>({...state, wizardType: 'pointPerCostFor'}))}>
+                                Most Points
+                            </button>
+                        </span>
+                        <span className="p-0 m-0 col-3 align-self-stretch">
+                            <button className={'btn btn-small btn-dark p-0 m-0 w-100 h-100 ' + (state.wizardType==='costPerCostFor'? 'checked': '')} onClick={()=>setState(state=>({...state, wizardType: 'costPerCostFor'}))}>
+                                Best Value
+                            </button>
+                        </span>
+                    </div>
+                    <div className="row flex-row d-flex m-0 p-0 mx-1 mb-1 align-items-center justify-content-between w-100">
+                        <input type="number" className="col-4" value={state.wizardPrice} onChange={handlePriceChange}/>
+                        <div className="col-8 p-0">
+                            <div className="row flex-row justify-content-end p-0 m-0">
+                                {/* blue toggle */}
+                                <div className="credit-filter p-0 m-0 me-1">
+                                    <label  htmlFor="filter-blue">
+                                        <input type="checkbox" id="filter-blue" checked={state.wizardFilter.blue} onChange={()=>setState({...state, wizardFilter: {...state.wizardFilter, blue: !state.wizardFilter.blue}})}/>
+                                        <span className="blue">{state.viewingPlayer.credits.blue}</span>
+                                    </label>
+                                </div>
+                                {/* red toggle */}
+                                <div className="credit-filter p-0 m-0 me-1">
+                                    <label htmlFor="filter-red">
+                                        <input type="checkbox" id="filter-red" checked={state.wizardFilter.red} onChange={()=>setState({...state, wizardFilter: {...state.wizardFilter, red: !state.wizardFilter.red}})}/>
+                                        <span className="red">{state.viewingPlayer.credits.red}</span>
+                                    </label>
+                                </div>
+                                <div className="credit-filter p-0 m-0 me-1">
+                                    <label htmlFor="filter-green">
+                                        <input type="checkbox" id="filter-green" checked={state.wizardFilter.green} onChange={()=>setState({...state, wizardFilter: {...state.wizardFilter, green: !state.wizardFilter.green}})}/>
+                                        <span className="green">{state.viewingPlayer.credits.green}</span>
+                                    </label>
+                                </div>
+                                <div className="credit-filter  p-0 m-0 me-1">
+                                    <label htmlFor="filter-yellow">
+                                        <input type="checkbox" id="filter-yellow" checked={state.wizardFilter.yellow} onChange={()=>setState({...state, wizardFilter: {...state.wizardFilter, yellow: !state.wizardFilter.yellow}})}/>
+                                        <span className="yellow">{state.viewingPlayer.credits.yellow}</span>
+                                    </label>
+                                </div>
+                                <div className="credit-filter p-0 m-0">
+                                    <label htmlFor="filter-orange">
+                                        <input type="checkbox" id="filter-orange" checked={state.wizardFilter.oragne} onChange={()=>setState({...state, wizardFilter: {...state.wizardFilter, orange: !state.wizardFilter.orange}})}/>
+                                        <span className="orange">{state.viewingPlayer.credits.orange}</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+            </>)
+        };
+
+        const Cards = (props) => {
+            const { player, cost, filters, type } = props;
+
+            const cardValues = advCards.map(card=>{
+                const costFor = card.price 
+                    - player.advCards.reduce((discount, _card)=>discount+Object.entries(_card.credits).reduce((partialDiscount, [group, credit])=>partialDiscount+((card.pgroup===group||card.sgroup===group)?credit:0),0),0)
+                    - player.advCards.reduce((discount, _card)=>discount+(_card.creditTo?.name===card.name? _card.creditTo?.amount:0),0);
+                const points = card.price>=200? 6: card.price>=100? 3: 1;
+                const totalCredits = Object.values(card.credits).reduce((partial, current)=>partial+current, 0)/costFor;
+                return {
+                    ...card,
+                    owned: player.advCards.some(_card=>_card.name===card.name),
+                    costFor: -costFor,
+                    pointPerCostFor: points/costFor,
+                    costPerCostFor: card.price/costFor,
+                    totalCredits,
+                }
+            });
+
+            const cards = [];
+            let total = 0;
+            cardValues.sort((a, b)=>a[type]>=b[type]?-1:1).forEach(cv => {
+                const isInColors = Object.keys(filters).some(group=>(((cv.pgroup===group)||(cv.sgroup===group))&&(filters[group])));
+                const noColors = Object.values(filters).every(_=>!_);
+                if ((total-cv.costFor<=cost)&&(!cv.owned)&&(noColors||isInColors)) {cards.push(cv); total -= cv.costFor;}
+            });
+
+            return <div className="row m-0 p-0 overflow-md-auto mx-n1">{cards.map(CivCard)}</div>
+        };
+
+        return (<>
+            {Types()}
+            <Cards player={state.viewingPlayer} cost={state.wizardPrice} type={state.wizardType} filters={state.wizardFilter}/>
+        </>)
     };
 
     const EndGame = () => {return(<div className="mt-3">

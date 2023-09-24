@@ -52,7 +52,7 @@ def game():
     except AuthError as error: return jsonify(error.dict()), error.STATUS_CODE
 
 @app.route('/api/gameaction', methods=['POST'])
-def game_action():
+def game_action(): 
     data:dict = request.json
     key = app.config['SECRET_KEY']
     type = data['type'] # civilization, start, ...

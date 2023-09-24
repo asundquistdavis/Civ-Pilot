@@ -589,6 +589,10 @@ div.advCreditTo {
     text-align: center;
 }
 
+button.checked {
+    box-shadow: yellow 0 0 10px;
+}
+
 // bootstrap variables
 
 $enable-negative-margins: true;
