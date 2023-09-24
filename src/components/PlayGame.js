@@ -619,7 +619,7 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
                     totalCredits,
                 }
             });
-
+            
             const cards = [];
             let total = 0;
             cardValues.sort((a, b)=>a[type]>=b[type]?-1:1).forEach(cv => {
