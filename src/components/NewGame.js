@@ -1,9 +1,10 @@
 import React from "react";
 import axios from "axios";
 
-const capitalize = (string) => string? string.charAt(0).toUpperCase() + string.slice(1): string;
+const capitalize = (string) => {if (!string?.toString()) {return ''}; return string.toString().charAt(0).toUpperCase() + string.toString().slice(1)};
 
 const NewGame = (state, token, cd, player, game, civilizations, advCards, setState, setToken, setCD, setPlayer, setGame, setCivilizations, setAdvCards, usernames, setUsernames, setHistory) => {
+
 
     const allPlayersHaveCiv = game? Boolean(game.players.filter(player=>player.civ!==null)): false;
     const serverIsHost = game? game.hostId===player.id: false;
@@ -102,6 +103,8 @@ const NewGame = (state, token, cd, player, game, civilizations, advCards, setSta
             {serverIsHost? <td><input className="form-check-input" type="checkbox"/></td>: null}
         </tr>)};
 
+    // showingGame? console.log(game.host): null;
+
     return (<div className="d-flex flex-column h-100 mx-2">
 
         {/* header / username / log out button */}
@@ -132,7 +135,7 @@ const NewGame = (state, token, cd, player, game, civilizations, advCards, setSta
             </div>
         </div>
         {/* sub-header */}
-        <h5>{showingGame? capitalize(game.host) + '\'s Game': 'Join or create a new game!'}</h5>
+        <h5>{showingGame? capitalize(game.host?.username) + '\'s Game': 'Join or create a new game!'}</h5>
         <form className="m-0 p-0">
             {/* toggle host */}
             <div className="form-check form-switch text-start">
@@ -143,7 +146,7 @@ const NewGame = (state, token, cd, player, game, civilizations, advCards, setSta
             <div className="row d-flex flex row align-items-center justify-content-between m-0 p-0">
                 {/* input username */}
                 <div className="form-floating col-9 mb-3 m-0 p-0">
-                    <input type="text" placeholder="Disabled input" className="form-control" autoComplete="off" onChange={handleHostNameChange} value={game? game.host:(state.isNewHost? player.username: cd.hostName)} required disabled={showingGame || state.isNewHost}/>
+                    <input type="text" placeholder="Disabled input" className="form-control" autoComplete="off" onChange={handleHostNameChange} value={game? game.host.username:(state.isNewHost? player.username: cd.hostName)} required disabled={showingGame || state.isNewHost}/>
                     <label>Host Username</label>
                 </div>
                 {/* create or join game / start game */}

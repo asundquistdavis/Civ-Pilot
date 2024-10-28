@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Integer, String, ForeignKey, JSON, Boolean
+from sqlalchemy import create_engine, Integer, String, ForeignKey, JSON, Boolean, column
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, Session, backref
 from typing import Any, Protocol, List
 from exception import PlayerNotAutherizedError, GamePlayersNotReady, IvalidRequestError, GameInProgressError
@@ -6,6 +6,7 @@ from collections import Counter
 from jwt import decode
 import os
 from json import load
+from random import shuffle as rnd_shuffle
 
 civs = {}
 with open('assets/civs.json', 'r') as civs_file:
@@ -27,8 +28,10 @@ if not production: import config
 local_url = 'sqlite:///db.sqlite'
 protical, user, password, host, port, database = (os.environ['protical'], os.environ['user'], os.environ['password'], os.environ['host'], os.environ['port'], os.environ['database']) if production else (config.protical, config.user, config.password, config.host, config.port, config.database)
 production_url = f'{protical}://{user}:{password}@{host}:{port}/{database}'
-url = production_url
+url = local_url if os.environ['local'] else production_url
 engine = create_engine(url)
+
+print(url)
 
 def get_or_create(session:Session, Table:type, return_type=False, literal_only:bool=False, get_only=False, **conditions)->Any:
     # tuple that holds the target instance and the type literal/copy/new
@@ -53,8 +56,101 @@ class Table(Protocol):
 
 # returns a json-like dictionary version of instance
 def json(table_instance:Table, parent:str=None)->dict:
-    if table_instance is None: return None
+    if table_instance is None or table_instance == []: return None
     return table_instance.__json__(parent)
+
+class TradeCard(Base):
+
+    __tablename__ = 'tradecard'
+    id:Mapped[int] = mapped_column(primary_key=True)
+    name:Mapped[str] = mapped_column(String)
+    level:Mapped[int] = mapped_column(Integer)
+    max_quantity:Mapped[int] = mapped_column(Integer)
+    qualifier:Mapped[str] = mapped_column(String)
+    pcolor:Mapped[str] = mapped_column(String)
+    players:Mapped[List['TradeCardPlayer']] = relationship('TradeCardPlayer')
+    players_want:Mapped[List['TradeCardWants']] = relationship('TradeCardWants')
+    players_have:Mapped[List['TradeCardHas']] = relationship('TradeCardHas')
+
+    def from_raw(session:Session, name:str=None, level:int=None, max_quantity:int=None, qualifier:str=None, pcolor:str=None):
+        return get_or_create(session, TradeCard, name=name, level=level, max_quantity=max_quantity, qualifier=qualifier, pcolor=pcolor)
+
+    def all(session:Session):
+        return list(session.query(TradeCard).all())
+    
+    def create_all(session:Session, raw_cards:List[dict]):
+        return [TradeCard.from_raw(session=session, **card) for card in raw_cards]
+    
+    def __json__(self, parent:str=None):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'level': self.level,
+            'max_quantity': self.max_quantity,
+            'qualifier': self.qualifier,
+            'pcolor': self.pcolor
+        }
+    
+class TradeCardTransactionStatus(Base):
+
+    __tablename__ = 'tradecardtransactionstatus'
+    id:Mapped[int] = mapped_column(Integer, primary_key=True)
+    status:Mapped[str] = mapped_column(String, default='hidden')
+    card_id:Mapped[int] = mapped_column(Integer, ForeignKey('tradecardplayer.id'))
+    card:Mapped['TradeCardPlayer'] = relationship('TradeCardPlayer', back_populates='transactions')
+    target_id:Mapped[int] = mapped_column(Integer, ForeignKey('gameplayer.id'))
+    target:Mapped['GamePlayer'] = relationship('GamePlayer', back_populates='transactions_from')
+    
+
+class TradeCardPlayer(Base):
+
+    def build_trade_card_instances(session:Session, game_id):
+        deck = get_or_create(session, TradeCardDeck, level=0, game_id=game_id)
+        def sub(card):
+            get_or_create(session, TradeCardDeck, level=card.level, game_id=game_id)
+            [get_or_create(session, TradeCardPlayer, trade_card_id=card.id, deck_id=deck.id, proof_number=n) for n in range(card.max_quantity)]
+        [sub(card) for card in session.query(TradeCard).all()]
+
+    __tablename__ = 'tradecardplayer'
+    id:Mapped[int] = mapped_column(primary_key=True)
+    player_id:Mapped[int] = mapped_column(Integer, ForeignKey('gameplayer.id'), nullable=True)
+    player:Mapped['GamePlayer'] = relationship('GamePlayer', back_populates='trade_cards')
+    trade_card_id:Mapped[int] = mapped_column(Integer, ForeignKey('tradecard.id'))
+    trade_card:Mapped[TradeCard] = relationship('TradeCard', back_populates='players')
+    deck_id:Mapped[int] = mapped_column(Integer, ForeignKey('tradecarddeck.id'), nullable=True)
+    deck:Mapped['TradeCardDeck'] = relationship('TradeCardDeck', back_populates='cards')
+    proof_number:Mapped[int] = mapped_column(Integer)
+    transactions:Mapped[List['TradeCardTransactionStatus']] = relationship('TradeCardTransactionStatus', back_populates='card', cascade='all, delete-orphan')
+
+    def add_transaction(self, session:Session, target_id:int):
+        return get_or_create(session, TradeCardTransactionStatus, card_id=self.id, target_id=target_id)
+
+
+    def __json__(self, parent:str=None):
+        return {
+            **json(self.trade_card),
+            'transactions': [status.target_id for status in self.transactions]
+        }
+
+    def __repr__(self) -> str:
+        return f'{self.trade_card.name}'
+    
+class TradeCardWants(Base):
+    
+    __tablename__ = 'tradecardwants'
+    id:Mapped[int] = mapped_column(Integer, primary_key=True)
+    card_id:Mapped[int] = mapped_column(Integer, ForeignKey('tradecard.id'))
+    card:Mapped[TradeCard] = relationship('TradeCard', back_populates='players_want')
+    player_id:Mapped[int] = mapped_column(Integer, ForeignKey('gameplayer.id'))
+    player:Mapped['GamePlayer'] = relationship('GamePlayer', back_populates='wants')
+
+class TradeCardHas(Base):
+    __tablename__ = 'tradecardhas'
+    id:Mapped[int] = mapped_column(Integer, primary_key=True)
+    card_id:Mapped[int] = mapped_column(Integer, ForeignKey('tradecard.id'))
+    card:Mapped[TradeCard] = relationship('TradeCard', back_populates='players_have')
+    player_id:Mapped[int] = mapped_column(Integer, ForeignKey('gameplayer.id'))
+    player:Mapped['GamePlayer'] = relationship('GamePlayer', back_populates='has')
 
 # advancement cards: holds info like name and price as well as card text
 class AdvCard(Base):
@@ -189,6 +285,10 @@ class GamePlayer(Base):
     game_info:Mapped['Game'] = relationship('Game', back_populates='players', uselist=False)
     # all the player's info for specific game
     civ:Mapped[str] = mapped_column(String, nullable=True)
+    trade_cards:Mapped[List[TradeCardPlayer]] = relationship(TradeCardPlayer, back_populates='player', cascade='all, delete-orphan')
+    wants:Mapped[List[TradeCardWants]] = relationship('TradeCardWants')
+    has:Mapped[List[TradeCardHas]] = relationship('TradeCardHas')
+    purchases:Mapped[List['TradeCardPurchase']] = relationship('TradeCardPurchase', cascade='all, delete-orphan')
     adv_cards:Mapped[List[AdvCards]] = relationship(AdvCards, back_populates='player', cascade='all, delete-orphan')
     adv_cards_selection:Mapped[List[AdvCardsSelection]] = relationship(AdvCardsSelection, back_populates='player', cascade='all, delete-orphan')
     ast_position:Mapped[int] = mapped_column(Integer, default=0)
@@ -199,6 +299,8 @@ class GamePlayer(Base):
     selection_ready:Mapped[bool] = mapped_column(Boolean, default=False)
     has_purchased:Mapped[bool] = mapped_column(Boolean, default=False)
     score_offset:Mapped[int] = mapped_column(Integer, default=0)
+
+    transactions_from:Mapped[List[TradeCardTransactionStatus]] = relationship('TradeCardTransactionStatus', cascade='all, delete-orphan')
 
     # player properties
     @property
@@ -231,14 +333,36 @@ class GamePlayer(Base):
         session.delete(self)
         session.commit()
 
+    def add_trade_card(self, session:Session, deck_id:int):
+        purchase = TradeCardPurchase(deck_id=deck_id, player_id=self.player_info.id)
+        session.add(purchase)
+        session.commit()
+
     # dunder methods
     def __json__(self, parent:str=None)->dict:
-        if parent=='info': return {
+        if parent=='game': return {
+            'id': self.player_info.id if self.player_info else None,
+            'username': self.player_info.username if self.player_info else None,
+            'isHost': self.is_host,
+            'advCards': [json(card, 'player') for card in self.adv_cards],
+            'advCardsSelection': [json(card, 'parent') for card in self.adv_cards_selection],
+            'tradeCards': self.trade_cards,
+            'civ': self.civ,
+            'color': self.pcolor,
+            # 'astOrder': self.ast_order,
+            'score': self.score,
+            'hasPurchased': self.has_purchased,
+            'canAdvance': self.can_advance,
+            'selectionReady': self.selection_ready
+        }
+        if parent=='player': return {**json(self.game_info, parent='player'), 'isHost':self.player_info.hosted_game == self.game_info} if self.game_info else None
+        return {
             'id': self.player_info.id,
             'username': self.player_info.username,
             'isHost': self.is_host,
             'advCards': [json(card, parent='info') for card in self.adv_cards],
             'advCardsSelection': [json(card, parent='info') for card in self.adv_cards_selection],
+            'tradeCards': [json(card) for card in self.trade_cards] if self.player_info.id == parent else len([self.trade_cards]),
             'civ': self.civ,
             'color': self.pcolor,
             'astRank': self.ast_rank,
@@ -250,23 +374,9 @@ class GamePlayer(Base):
             'credits': self.credits,
             'cities': self.cities,
             'census': self.census,
+            'has': [json(card.trade_card) for card in self.has],
+            'wants': [json(card.trade_card) for card in self.wants]
         }
-        game = {
-            'id': self.player_info.id if self.player_info else None,
-            'username': self.player_info.username if self.player_info else None,
-            'isHost': self.is_host,
-            'advCards': [json(card, 'player') for card in self.adv_cards],
-            'advCardsSelection': [json(card, 'parent') for card in self.adv_cards_selection],
-            'civ': self.civ,
-            'color': self.pcolor,
-            'astOrder': self.ast_order,
-            'score': self.score,
-            'hasPurchased': self.has_purchased,
-            'canAdvance': self.can_advance,
-            'selectionReady': self.selection_ready
-        }
-        if parent=='game': return game
-        return {**json(self.game_info), 'isHost':self.player_info.hosted_game == self.game_info} if self.game_info else None
 
     def __repr__(self) -> str: return f'{self.player_info}\'s info for {self.game_info}'
 
@@ -405,6 +515,50 @@ class Player(Base):
 
     def __repr__(self) -> str: return f'{self.username}'
 
+class TradeCardPurchase(Base):
+
+    __tablename__ = 'tradecardpurcahse'
+    id:Mapped[int] = mapped_column(Integer, primary_key=True)
+    player_id:Mapped[int] = mapped_column(Integer, ForeignKey('gameplayer.id'))
+    player:Mapped[GamePlayer] = relationship('GamePlayer', back_populates='purchases')
+    deck_id:Mapped[int] = mapped_column(Integer, ForeignKey('tradecarddeck.id'))
+    deck:Mapped['TradeCardDeck'] = relationship('TradeCardDeck', back_populates='purchasing')
+
+    def __json__(self, parent:str=None):
+        if parent=='deck': return {
+            'id': self.id,
+            'playerId': self.player_id
+        }
+        else: return {
+            'id': self.id,
+            'deckId': self.deck_id,
+            'level': self.deck.level
+        }
+
+    def __repr__(self) -> str:
+        return f'{self.player} @level {self.deck.level}'
+
+class TradeCardDeck(Base):
+
+    __tablename__ = 'tradecarddeck'
+    id:Mapped[int] = mapped_column(primary_key=True)
+    level:Mapped[int] = mapped_column(Integer)
+    cards:Mapped[List[TradeCardPlayer]] = relationship('TradeCardPlayer')
+    game_id:Mapped[int] = mapped_column(Integer, ForeignKey('game.id'))
+    game:Mapped['Game'] = relationship('Game', back_populates='decks')
+    purchasing:Mapped[List[TradeCardPurchase]] = relationship('TradeCardPurchase', cascade='all, delete-orphan')
+
+    def __json__(self, parent:str=None):
+        return {
+            'id': self.id,
+            'level': self.level,
+            'cards': [json(card.trade_card) for card in self.cards],
+            'purchasing': [json(purchase, 'deck') for purchase in self.purchasing],
+        }
+
+    def __repr__(self) -> str:
+        return str([str(card) for card in self.cards])
+
 class Game(Base):
 
     class TurnInfo(Base):
@@ -439,6 +593,7 @@ class Game(Base):
         score:Mapped[int] = mapped_column(Integer)
         cities:Mapped[int] = mapped_column(Integer)
         census:Mapped[int] = mapped_column(Integer)
+
         # dunder methods
         def __json__(self, parent:str=None)->dict:
             if parent=='history': return {
@@ -475,14 +630,11 @@ class Game(Base):
     players:Mapped[List[GamePlayer]] = relationship(GamePlayer, cascade='all, delete-orphan')
     turn_number:Mapped[int] = mapped_column(Integer, nullable=True)
     over:Mapped[bool] = mapped_column(Boolean, default=False)
+    trading:Mapped[bool] = mapped_column(Boolean, default=False)
     # history
     history:Mapped[List['Game.Turn']] = relationship('Turn', back_populates='game', cascade='all, delete-orphan')
 
-    def start(self, session:Session, player:Player):
-        if player.game.game_id != self.id: raise PlayerNotAutherizedError
-        if not self.all_players_have_civ: raise GamePlayersNotReady
-        self.turn_number = 1
-        session.commit()
+    decks:Mapped[List[TradeCardDeck]] = relationship('TradeCardDeck', back_populates='game', cascade='all, delete-orphan')
 
     def delete(self, session:Session):
         session.delete(self)
@@ -512,6 +664,19 @@ class Game(Base):
         self.turn_number += 1
         session.commit()
 
+    def deal(self, session:Session):
+        for player in self.players:
+            player.trade_cards.extend([self.decks[i].cards.pop() for i in range(1, player.cities + 1)])
+            session.add(player)
+        session.commit()
+
+    def shuffle(self, start=False):
+        incoming = [[] for _ in self.decks]
+        for card in filter(lambda deck: deck.level==0, self.decks).__next__().cards:
+            incoming[card.trade_card.level].append(card) if card.trade_card.qualifier != 'non-tradable' else None
+        [rnd_shuffle(_incoming) for _incoming in incoming]
+        [[filter(lambda deck: deck.level==level, self.decks).__next__().cards.extend(_incoming)] for level, _incoming in enumerate(incoming)]
+
     @property
     def game_is_ending(self): 
         return any(player.can_advance and player.ast_position==14 for player in self.players)
@@ -520,15 +685,7 @@ class Game(Base):
         return all(bool(player.civ) for player in self.players)
 
     def __json__(self, parent:str=None):
-        if parent=='info': return {
-            'id': self.id,
-            'hostId': self.host.id,
-            'host': self.host.username,
-            'players': [json(player, parent='info') for player in self.players],
-            'turnNumber': self.turn_number,
-            'isEnding': self.game_is_ending,
-            'isOver': self.over,
-        }
+
         if parent=='history': return {'turns': [json(turn, parent='history') for turn in self.history]}
         if parent == 'player': return {
             'id': self.id,
@@ -536,9 +693,14 @@ class Game(Base):
         }
         return {
             'id': self.id,
-            'host': json(self.host, parent='game'),
-            'players': [json(player, 'game') for player in self.players],
-            'turnNumber': self.turn_number 
+            'hostId': self.host.id,
+            'host': self.host.username,
+            'players': [json(player, parent=parent) for player in self.players],
+            'decks': [json(deck, parent='info') for deck in self.decks if deck.level != 0],
+            'turnNumber': self.turn_number,
+            'isEnding': self.game_is_ending,
+            'isOver': self.over,
+            'isTrade': self.trading,
         }
     
     def __repr__(self) -> str: return f'{self.host}\'s game'
@@ -546,6 +708,9 @@ class Game(Base):
 if __name__ == '__main__':
     Base.metadata.create_all(engine)
     with Session(engine) as session:
+        with open('assets/tradecards.json', 'r') as trade_file:
+            trade_cards = load(trade_file)['tradeCards']
+            TradeCard.create_all(session, trade_cards)
         with open('assets/advancements.json', 'r') as adv_file:
             advancement_cards = load(adv_file)['advancements']
             AdvCard.create_all(session, advancement_cards)

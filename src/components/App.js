@@ -27,6 +27,8 @@ const App = () => {
         wizardFilter: {green: false, blue: false, orange: false, yellow: false, red: false},
         wizardPrice: 100,
         wizardType: 'costFor',
+        tradeMode: 'players',
+        tradeCardSelect: (card) => {console.log(card)},
     });
 
     // client data
@@ -62,7 +64,6 @@ const App = () => {
             .then(response=>setPlayer(response.data.player))
             .catch(error=>{
                 const message = error.response.data.message;
-                console.log(message);
                 if (message === 'invalid credentials') {
                     localStorage.clear();
                     setToken(null);
@@ -74,13 +75,12 @@ const App = () => {
     const getGameInfo = () => {
         if (token && player) {
             axios.post('/api/game', {token:token, playerId: player.id, type: 'get'})
-            .then(response=>setGame(response.data.game))
+            .then(response=>{setGame(response.data.game)})
             .catch(error=>{
                 const message =  error.response.data.message;
                 setCD({...cd, errorMessage: message});
                 message==='game dne'? setGame(null): null;
             });
-            getHistory();
         };
     };
 
@@ -100,7 +100,7 @@ const App = () => {
         .then(async response=>{
             setCalamities(response.data.calamities);
         })
-    }
+    };
 
     const getAdvCards = () => {
         axios.get('api/advcards')
@@ -171,6 +171,14 @@ const App = () => {
         }
     }, [game, state.viewingMode]);
 
+    useEffect(()=>{
+        if (player && game && game.turnNumber && (state.viewingMode === 'trade')) {
+            const interval = setInterval(()=>{
+            }, 500)
+            return () => clearInterval(interval);
+        }
+    }, [game, state.viewingMode])
+
     const Loading = () => {
     
         return (<div>Loading...</div>)};
@@ -179,7 +187,6 @@ const App = () => {
 
     const Alert = () => {
         const alert = state.alert
-
         return (
             <div className="alert-screen">
                 <div className="row my-5">

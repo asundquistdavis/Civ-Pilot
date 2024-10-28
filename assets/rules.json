@@ -36,17 +36,17 @@
                 {
                     "subtitle": "movement",
                     "order": "census (largest to smallest), AST rank",
-                    "text": "Players may move each of their tokens on the board either 1 step to an area adjacent by land or onto a ship and may move each of their ships 4 steps. At any time during a players movemnet phase trun, that player may choose to construct ships. This can only be done in coastal areas containing 1 or more of his tokens. A player can have no more than 4 ships at any time. Constructing a ship costs 2 tokens which can be paid for by using treasury and/or by destroying tokens from the same area as the ship. Ships may be used the turn they are built. As soon as a player wants to use a ship that was built on a differenet turn, they must either pay 1 treasury token or destroy 1 of their tokens from anywhere on the board to maintain the ship. This must be done for each ship the player wished to use and can be done for ships the player does not wish to use this turn. Any ships not maintained are destroyed at the end of the players movement phase turn. Players may move each of their ships a maximum of 4 areas by water per turn. By default, ships cannot be moved through open sea areas. At any time during the ship's movement, the ship may embark or disambark any number of tokens, but the ship can not carry more than the carrying capacity. The default carrying capacity is 5. At the ships final destination, all tokens automatically disembark in that area. Tokens may move by land or by ship but not both. By default, ships do not engage in conflict or block the mmovement of other ships."
+                    "text": "Players may move each of their tokens on the board either 1 step to an area adjacent by land or onto a ship and may move each of their ships 4 steps. At any time during a players movement phase turn, that player may choose to construct ships. This can only be done in coastal areas containing 1 or more of his tokens. A player can have no more than 4 ships at any time. Constructing a ship costs 2 tokens which can be paid for by using treasury and/or by destroying tokens from the same area as the ship. Ships may be used the turn they are built. As soon as a player wants to use a ship that was built on a different turn, they must either pay 1 treasury token or destroy 1 of their tokens from anywhere on the board to maintain the ship. This must be done for each ship the player wished to use and can be done for ships the player does not wish to use this turn. Any ships not maintained are destroyed at the end of the players movement phase turn. Players may move each of their ships a maximum of 4 areas by water per turn. By default, ships cannot be moved through open sea areas. At any time during the ship's movement, the ship may embark or disembark any number of tokens, but the ship can not carry more than the carrying capacity. The default carrying capacity is 5. At the ships final destination, all tokens automatically disembark in that area. Tokens may move by land or by ship but not both. By default, ships do not engage in conflict or block the movement of other ships."
                 },
                 {
                     "subtitle": "token conflict resolution",
                     "order": "simultaneous",
-                    "text": "Each round in a token conflict players take turns removing their tokens until the area is at or below population limit or all players involed have removed 1 token. The player with the least amount of tokens removes first. If players have equal number of tokens they must remove simultaneously."
+                    "text": "Each round in a token conflict players take turns removing their tokens until the area is at or below population limit or all players involved have removed 1 token. The player with the least amount of tokens removes first. If players have equal number of tokens they must remove simultaneously."
                 },
                 {
                     "subtitle": "city conflict resolution",
                     "order": "AST rank",
-                    "text": "a city attack is successful if the attacking player has at least 7 tokens in the area after resolving token conflicts. if the attack is successful, the attacking player may gain up to 3 treasury from stock and may choose to draw a trade card from the defending player's hand and the defending player replaces theuir city with 6 tokens from stock, or all of their tokens from stock if they have fewer than 6 tokens in stock. the defender may choose to wait for one other city attack to be resolved to possibly have more tokens in stock. regular token conflict now takes place."
+                    "text": "a city attack is successful if the attacking player has at least 7 tokens in the area after resolving token conflicts. if the attack is successful, the attacking player may gain up to 3 treasury from stock and may choose to draw a trade card from the defending player's hand and the defending player replaces their city with 6 tokens from stock, or all of their tokens from stock if they have fewer than 6 tokens in stock. the defender may choose to wait for one other city attack to be resolved to possibly have more tokens in stock. regular token conflict now takes place."
                 }
             ]          
         },
@@ -57,7 +57,7 @@
                 {
                     "subtitle": "city construction",
                     "order": "AST rank",
-                    "text": "players may build as many cities per turn, not exceeding a total of 9 and meeting the following requirements: 6 tokens in an area containing a city cite, 12 tokens in an area without a city cite and with a initial population limit greater than 0 (\"wilderness ctiy\"). return all tokens in the area to stock and place a new city."
+                    "text": "players may build as many cities per turn, not exceeding a total of 9 and meeting the following requirements: 6 tokens in an area containing a city cite, 12 tokens in an area without a city cite and with a initial population limit greater than 0 (\"wilderness city\"). return all tokens in the area to stock and place a new city."
                 },
                 {
                     "subtitle": "surplus population removal",
@@ -78,7 +78,7 @@
                 {
                     "subtitle": "primary trade card acquisition",
                     "order": "cities (fewest to most), AST rank",
-                    "text": "each player draws 1 card per city they control, starting with stack number 1 and ending at the stack number equal to the number of cities they control. players cards are secretly held and players should not deisclose any inforamtion about their cards except when allowed during trading. if a stack is empty, players draw water for that stack instead."
+                    "text": "each player draws 1 card per city they control, starting with stack number 1 and ending at the stack number equal to the number of cities they control. players cards are secretly held and players should not disclose any information about their cards except when allowed during trading. if a stack is empty, players draw water for that stack instead."
                 },
                 {
                     "subtitle": "additional trade card acquisition",
@@ -88,7 +88,7 @@
                 {
                     "subtitle": "trade",
                     "order": "simultaneous",
-                    "text": "players may make as many trade deals as they would like (in the specified time limit) to build sets of cards and avoid calamities. A trade deal is the exchange of at least 3 trade cards per player between exactly 2 players. a trade offer consists of both players involved truthfully naming 2 trade cards and the total number of cards in the trade. the players may mention other trade cards but this information is not binding. the total number of trade cards exchanged need not be equall. once a deal is made, both players exchange the cards committed in the offer. only commodity and tradable calamity cards may be exchanged. players may not exchange tokens, advancement cards or other assets. conditional diplomatic and strategic moves as well as other trades may be mentioned but are not in any way binding as the result of a trade deal. all trade deals are final."
+                    "text": "players may make as many trade deals as they would like (in the specified time limit) to build sets of cards and avoid calamities. A trade deal is the exchange of at least 3 trade cards per player between exactly 2 players. a trade offer consists of both players involved truthfully naming 2 trade cards and the total number of cards in the trade. the players may mention other trade cards but this information is not binding. the total number of trade cards exchanged need not be equal. once a deal is made, both players exchange the cards committed in the offer. only commodity and tradable calamity cards may be exchanged. players may not exchange tokens, advancement cards or other assets. conditional diplomatic and strategic moves as well as other trades may be mentioned but are not in any way binding as the result of a trade deal. all trade deals are final."
                 }
             ]            
         },
@@ -141,7 +141,7 @@
         },
         {
             "number": 7,
-            "title": "cleenup",
+            "title": "cleanup",
             "texts": [
                 {
                     "subtitle": "AST position alteration",

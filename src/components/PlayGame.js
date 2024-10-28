@@ -1,8 +1,8 @@
 import React from "react";
 import axios from "axios";
-import History from "./History";
 import Info from "./Info";
-import { CheckSquare, PlusSquare, StopBtn, BarChartLine, SkipEndBtn, XCircle, BoxArrowRight, Backspace, InfoSquare, Stars } from "react-bootstrap-icons";
+import { CheckSquare, PlusSquare, StopBtn, BarChartLine, SkipEndBtn, XCircle, BoxArrowRight, Backspace, InfoSquare, Stars, Table, PlayBtn, AppIndicator } from "react-bootstrap-icons";
+import Trade from "./Trade";
 
 const capitalize = (str) => str? str.charAt(0).toUpperCase() + str.slice(1): str;
 const title = (str) => str.split(' ').map(capitalize).join(' ')
@@ -298,10 +298,10 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
                             <Stars width={25} height={25}/>
                         </button>
                     </span>
-                    {/* history */}
+                    {/* Trade */}
                     <span>
-                        <button type="button" className="btn btn-small btn-dark p-1 m-0 me-1" onClick={()=>setState({...state, viewingMode: 'history'})}>
-                            <BarChartLine width={25} height={25}/>
+                        <button type="button" className="btn btn-small btn-dark p-1 m-0 me-1" onClick={()=>setState({...state, viewingMode: 'trade'})}>
+                            <Table width={25} height={25}/>
                         </button>
                     </span>
                     {/* info */}
@@ -643,7 +643,7 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
 
     return (<div className="d-flex flex-column mx-2">
         <div className="row d-flex justify-content-between mt-3 align-items-center">
-            <div className="col-3 d-flex flex-no-wrap justify-conent-start">
+            <div className="col-3 d-flex flex-no-wrap justify-content-start">
                 {state.viewingMode!=='board'? 
                 // back to scoreboard
                 <button className="btn btn-dark btn-sm p-1" onClick={() => setState({...state, viewingPlayer: null, viewingMode: 'board'})}>
@@ -674,8 +674,8 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
             Browser()
         :state.viewingMode==='wizard'?
             Wizard()
-        :state.viewingMode==='history'?
-            <History state={{player, history, state}}/>
+        :state.viewingMode==='trade'?
+            Trade(state, setState, game, setGame, player, token)
         :state.viewingMode==='info'?
             Info(state, setState, advCards, rules, calamities)
         :Scoreboard()}

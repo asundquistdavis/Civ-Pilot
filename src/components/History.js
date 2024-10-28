@@ -45,28 +45,7 @@ class History extends React.Component {
                 b: 30,
             }
         }
-        return (
-            <div className='row'>
-                <div className='col-12'>
-                    <div className='row'>
-                        <div className='col-6 col-md-4 mx-auto my-2'>
-                            <select className='form-select text-center' onChange={(event) => this.setState({...this.state, state: {...this.state.state, graphMode: event.target.value}})}>
-                                <option value={'score'}>Score</option>
-                                <option value={'cities'}>Cities</option>
-                                <option value={'census'}>Census</option>
-                                <option value={'astPosition'}>AST Position</option>
-                                <option value={'advCards'}>Advancement Cards</option>
 
-                            </select>
-                        </div>
-                    </div> 
-                    <Plot
-                        data={playerdata(this.state.state.graphMode)}
-                        layout={layout}
-                    />
-                </div>
-            </div>
-        );
     };
 };
 

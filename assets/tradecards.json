@@ -1,0 +1,10 @@
+{
+    "meta": {
+        "version": "1.0.0"
+    },
+    "tradeCards": [
+        {"name": "salt", "level": 1, "max_quantity": 9, "qualifier": "", "pcolor": "red"},
+        {"name": "gold", "level": 2, "max_quantity": 5, "qualifier": "", "pcolor": "green"},
+        {"name": "cyclone", "level": 3, "max_quantity": 1, "qualifier": "non-tradable", "pcolor": "red"}
+    ]
+}

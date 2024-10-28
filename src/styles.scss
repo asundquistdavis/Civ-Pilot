@@ -593,6 +593,221 @@ button.checked {
     box-shadow: yellow 0 0 10px;
 }
 
+div.playerTagNumber {
+    position: absolute;
+    left: -5px;
+    top: -5px;
+    width: 20px;
+    aspect-ratio: 1/1;
+    border: solid black 1px;
+    z-index: 1;
+    background-color: lightgray;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    line-height: 0;
+    border-radius: 50%;
+}
+
+div.deckCard {
+    flex-shrink: 0;
+    border-radius: 10px;
+    border: solid black 1px;
+    background-color: rgb(209, 185, 165);
+    aspect-ratio: 5/7;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    line-height: 0;
+    font-size: x-large;
+    margin-right: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-self: start;
+}
+
+div.deckNumber {
+    padding: 10px;
+    border-radius: 50%;
+    border: solid black 1px;
+    background-color: rgb(101, 84, 71);
+    font-size: x-large;
+    font-weight: 500;
+    aspect-ratio: 1/1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    line-height: 0;
+}
+
+div.deckSize {
+    line-height: 1;
+    font-size: small;
+}
+
+div.purchaseTag {
+    line-height: 1;
+    display: flex;
+    flex-direction: column;
+    width: 70px;
+    padding: 3px 5px;
+    border-radius: 5px;
+    border: solid black 1px;
+    background-color: var(--color, black);
+    position: relative;
+    flex-grow: 0;
+}
+
+div.playerTagName {
+    font-size: large;
+}
+
+div.playerTagCiv {
+    font-size: small;
+}
+
+div.deckRow {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: end;
+}
+
+div.cardsBadge {
+    background-color: rgb(209, 185, 165);
+    border: solid black 1px;
+    border-radius: 5px;
+    aspect-ratio: 5/7;
+    border: solid black 1px;
+    height: 50px;
+}
+
+li.deckItem {
+    outline: solid black 1px;
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 6px;
+}
+
+ul.unset {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+table.table td * {
+    margin: auto auto;
+}
+
+table.table {
+    margin-bottom: 12px !important;
+}
+
+li.tradeWithPlayerRow {
+    display: flex;
+    gap: 5px;
+    justify-content: start;
+    align-items: center;
+}
+
+div.tradeWithRow {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+div.tradeWithGiving {
+    background-color: var(--bs-light);
+}
+
+div.tradeWithReceiving {
+    background-color: var(--bs-light);
+}
+
+div.tradeWithCard {
+    border: solid black 1px;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+
+}
+
+div.tradeCardHand {
+    border: solid black 1px;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    margin-bottom: 12px !important;
+    background-color: white;
+    padding: 6px;
+}
+
+div.tradeCardLarge {
+    border: solid black 1px;
+    border-radius: 5px;
+    aspect-ratio: 5/7;
+    text-align: center;
+    width: 70px;
+    background-color: rgb(209, 185, 165);
+    padding: 3px;
+}
+
+div.tradeCardLarge:hover {
+    box-shadow: black 0 0 7px;
+}
+
+div.tradeCardLarge[selected] {
+    box-shadow: green 0 0 7px;
+}
+
+div.tradeCardLargeContent {
+    background-color: var(--color, white);
+    border-radius: 2px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+div.tradeCardLargeName {
+    font-size: large;
+    line-height: 1;
+}
+
+div.tradeCardLargeLevel {
+    line-height: 1;
+    font-size: xx-large;
+}
+
+div.tradeCardLargeBoxes {
+    font-size: xx-small;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-left: 1px;
+    max-width: 100%;
+    margin-right: 1px;
+}
+
+div.tradeCardLargeBox {
+    flex: 0 0 25%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    outline: solid black .25px;
+    width: 15px;
+    // margin: -1px;
+    line-height: 1;
+}
+
+div.tradeCardLargeQualifier {
+    font-size: large;
+}
+
 // bootstrap variables
 
 $enable-negative-margins: true;
