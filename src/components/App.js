@@ -115,21 +115,14 @@ const App = () => {
         })
     };
 
-    const getHistory = () => {
-        const data = {
-            playerId: player.id,
-            token,
-        };
-        axios.post('api/history', data)
-        .then(response=>{setHistory(response.data.history)});
-    };
-
-    useEffect(()=>{
-        if (state.viewingMode==='history') {
-            getHistory();
-            state.graphMode==='score'? null: setState({...state, graphMode: 'score'})
-        };
-    }, [state.viewingMode]);
+    // const getHistory = () => {
+    //     const data = {
+    //         playerId: player.id,
+    //         token,
+    //     };
+    //     axios.post('api/history', data)
+    //     .then(response=>{setHistory(response.data.history)});
+    // };
 
     useEffect(()=>{
         const localToken = localStorage.getItem(token);

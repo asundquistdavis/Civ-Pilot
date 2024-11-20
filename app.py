@@ -46,7 +46,6 @@ def game():
             elif type=='join': game:Game = player.join_game(session, data)
             elif not player.game: return jsonify({'message': 'game dne'}), 400
             else: game:Game = player.game.game_info
-            # if type=='start': game.start(session)
             if type=='leave': game:Game = player.leave_game(session)
             if type=='delete': game:Game = player.delete_game(session)
             # print(dir(game))
@@ -110,8 +109,12 @@ def game_action():
             if not targetPlayer: raise PlayerNotFoundError
             if not ((targetPlayer.id == requestingPlayer.id) or (requestingPlayer.game.is_host)): raise PlayerNotAutherizedError
             if type=='civilization':
-                targetPlayer.game.civ = data['civilization'] if data['civilization'] else None
+                civilization = data.get('civilization')
+                targetPlayer.game.civ = civilization if civilization else None
+                print(civilization)
                 session.add(targetPlayer)
+                session.commit()
+                print(targetPlayer.game.civ)
             if type=='advCardSelect':
                 if not targetPlayer.deselect_card(session, data['advCardId']): targetPlayer.select_card(session, data['advCardId'])
             if type=='advCardPurchase' and requestingPlayer.game.is_host: targetPlayer.add_cards(session)

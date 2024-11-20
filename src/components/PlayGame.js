@@ -178,8 +178,6 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
                 };
                 axios.post('/api/gameaction', data)
                 .then(response=>{setGame(response.data.game)});
-                axios.post('/api/history', data)
-                .then(response=>{setHistory(response.data.turns)});
             };
         };
 
@@ -298,12 +296,12 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
                             <Stars width={25} height={25}/>
                         </button>
                     </span>
-                    {/* Trade */}
+                    {/* Trade
                     <span>
                         <button type="button" className="btn btn-small btn-dark p-1 m-0 me-1" onClick={()=>setState({...state, viewingMode: 'trade'})}>
                             <Table width={25} height={25}/>
                         </button>
-                    </span>
+                    </span> */}
                     {/* info */}
                     <span>
                         <button type="button" className="btn btn-small btn-dark p-1" onClick={()=>setState({...state, viewingMode: 'info'})}>
@@ -666,7 +664,7 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
             </div>
         </div>
         {/* game name */}
-        {game.isOver? 
+        {game.isOver?
             EndGame()
         :state.viewingMode==='card'? 
             Player()
@@ -674,8 +672,8 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
             Browser()
         :state.viewingMode==='wizard'?
             Wizard()
-        :state.viewingMode==='trade'?
-            Trade(state, setState, game, setGame, player, token)
+        // :state.viewingMode==='trade'?
+        //     Trade(state, setState, game, setGame, player, token)
         :state.viewingMode==='info'?
             Info(state, setState, advCards, rules, calamities)
         :Scoreboard()}

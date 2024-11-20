@@ -28,7 +28,9 @@ if not production: import config
 local_url = 'sqlite:///db.sqlite'
 protical, user, password, host, port, database = (os.environ['protical'], os.environ['user'], os.environ['password'], os.environ['host'], os.environ['port'], os.environ['database']) if production else (config.protical, config.user, config.password, config.host, config.port, config.database)
 production_url = f'{protical}://{user}:{password}@{host}:{port}/{database}'
-url = local_url if os.environ['local'] else production_url
+url = local_url if os.environ.get('prod') else local_url
+url = production_url
+print(url)
 engine = create_engine(url)
 
 print(url)
@@ -682,6 +684,7 @@ class Game(Base):
         return any(player.can_advance and player.ast_position==14 for player in self.players)
     @property
     def all_players_have_civ(self)->bool:
+        print(self.players[0].civ)
         return all(bool(player.civ) for player in self.players)
 
     def __json__(self, parent:str=None):
