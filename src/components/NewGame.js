@@ -135,7 +135,7 @@ const NewGame = (state, token, cd, player, game, civilizations, advCards, setSta
             </div>
         </div>
         {/* sub-header */}
-        <h5>{showingGame? capitalize(game.host?.username) + '\'s Game': 'Join or create a new game!'}</h5>
+        <h5>{showingGame? capitalize(game.host) + '\'s Game': 'Join or create a new game!'}</h5>
         <form className="m-0 p-0">
             {/* toggle host */}
             <div className="form-check form-switch text-start">
