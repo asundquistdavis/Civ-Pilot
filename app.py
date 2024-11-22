@@ -48,7 +48,6 @@ def game():
             else: game:Game = player.game.game_info
             if type=='leave': game:Game = player.leave_game(session)
             if type=='delete': game:Game = player.delete_game(session)
-            # print(dir(game))
             return jsonify({'game': json(game, parent=player.id)})
     except AuthError as error: return jsonify(error.dict()), error.STATUS_CODE
 
@@ -60,7 +59,6 @@ def game_action():
     try:
         with Session(engine) as session:
             requestingPlayer:Player = get_valid_player(session, key, data)
-            print(type)
             if type=='start':
                 if not requestingPlayer.game: return ... # can't start game that does not exist
                 if not requestingPlayer.game.is_host: return ... # cannot start game if not the host
@@ -75,8 +73,6 @@ def game_action():
                 game:Game = requestingPlayer.game.game_info
                 game.trading = True
                 game.deal(session)
-                # print([player.trade_cards for player in game.players])
-                # print(game.decks)
                 session.commit()
                 return jsonify({'game': json(game, parent=requestingPlayer.id)})
             if type=='endTrade':
@@ -102,8 +98,6 @@ def game_action():
                 status = card.add_transaction(session, target_id)
                 session.add(status, game)
                 session.commit()
-                print(json(card))
-                print(json(game, parent=requestingPlayer.id))
                 return jsonify({'game': json(game, parent=requestingPlayer.id)})
             targetPlayer:Player = get_or_create(session, Player, id=data['targetPlayerId'], literal_only=True)
             if not targetPlayer: raise PlayerNotFoundError
@@ -111,10 +105,8 @@ def game_action():
             if type=='civilization':
                 civilization = data.get('civilization')
                 targetPlayer.game.civ = civilization if civilization else None
-                print(civilization)
                 session.add(targetPlayer)
                 session.commit()
-                print(targetPlayer.game.civ)
             if type=='advCardSelect':
                 if not targetPlayer.deselect_card(session, data['advCardId']): targetPlayer.select_card(session, data['advCardId'])
             if type=='advCardPurchase' and requestingPlayer.game.is_host: targetPlayer.add_cards(session)
@@ -122,7 +114,7 @@ def game_action():
             if type=='creditChange' and requestingPlayer.game.is_host: targetPlayer.change_credits(session, data['credits'])
             if type=='censusChange': targetPlayer.game.census = data['census']; session.add(targetPlayer); session.commit()
             if type=='citiesChange': targetPlayer.game.cities = data['cities']; session.add(targetPlayer); session.commit()
-            if type=='scoreChange': targetPlayer.game.score_offset = targetPlayer.game.score_offset + data['score'] - targetPlayer.game.score; session.add(targetPlayer); session.commit(); print(targetPlayer.game.score_offset)
+            if type=='scoreChange': targetPlayer.game.score_offset = targetPlayer.game.score_offset + data['score'] - targetPlayer.game.score; session.add(targetPlayer); session.commit()
             if type=='playerAdvance': targetPlayer.game.can_advance = not targetPlayer.game.can_advance; session.add(targetPlayer); session.commit()
             if type=='endTurn' and requestingPlayer.game.is_host: requestingPlayer.game.game_info.end_turn(session, data)
             game:Game = requestingPlayer.game.game_info

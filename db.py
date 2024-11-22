@@ -31,8 +31,6 @@ production_url = f'{protical}://{user}:{password}@{host}:{port}/{database}'
 url = production_url if production else local_url
 engine = create_engine(url)
 
-print(url)
-
 def get_or_create(session:Session, Table:type, return_type=False, literal_only:bool=False, get_only=False, **conditions)->Any:
     # tuple that holds the target instance and the type literal/copy/new
     instance = None, None
@@ -682,7 +680,6 @@ class Game(Base):
         return any(player.can_advance and player.ast_position==14 for player in self.players)
     @property
     def all_players_have_civ(self)->bool:
-        print(self.players[0].civ)
         return all(bool(player.civ) for player in self.players)
 
     def __json__(self, parent:str=None):

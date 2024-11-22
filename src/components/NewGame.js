@@ -164,7 +164,7 @@ const NewGame = (state, token, cd, player, game, civilizations, advCards, setSta
             {showingGame? 
             <table className="table border border-dark">
                 <thead><tr><th scope="col">Username</th><th scope="col">Civilization</th>{serverIsHost? <th scope="col">Kick</th>: null}</tr></thead>
-                <tbody>{game.players.map((player, key)=>renderTableRow(player, key))}</tbody>
+                <tbody>{game.players.filter((playerA, playerB)=>playerA.name > playerB.name? 1 : -1).map((player, key)=>renderTableRow(player, key))}</tbody>
             </table>
             :null}   
         </form>
