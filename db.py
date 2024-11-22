@@ -28,7 +28,7 @@ if not production: import config
 local_url = 'sqlite:///db.sqlite'
 protical, user, password, host, port, database = (os.environ['protical'], os.environ['user'], os.environ['password'], os.environ['host'], os.environ['port'], os.environ['database']) if production else (config.protical, config.user, config.password, config.host, config.port, config.database)
 production_url = f'{protical}://{user}:{password}@{host}:{port}/{database}'
-url = local_url if os.environ.get('prod') else local_url
+url = production_url if production else local_url
 engine = create_engine(url)
 
 print(url)
