@@ -688,13 +688,10 @@ class Game(Base):
         players = self.players.copy()
         rnd_shuffle(players)
         for player, preset in zip(players, presets_cards):
-            print('player: ', player.player_info.username)
-            print('preset name: ', preset['name'])
             player.preset = preset['name']
             player.destroy = bool(preset['destroy'])
             [player.player_info.remove_card(session, card.adv_card_id) for card in player.adv_cards]
             for adv_card in preset['advances']:
-                print('advacnement: ', adv_card)
                 card:AdvCard = get_or_create(session, AdvCard, get_only=True, name=adv_card)
                 player.player_info.select_card(session, card.id)
             player.player_info.add_cards(session)
