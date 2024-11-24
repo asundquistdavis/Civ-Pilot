@@ -59,6 +59,14 @@ def game_action():
     try:
         with Session(engine) as session:
             requestingPlayer:Player = get_valid_player(session, key, data)
+            if type=='preset':
+                if not requestingPlayer.game : return
+                if not requestingPlayer.game.is_host : return
+                game:Game = requestingPlayer.game.game_info
+                game.assignPreset(session)
+                session.add(game)
+                session.commit()
+                return jsonify({'game': json(game, parent=requestingPlayer.id)})
             if type=='start':
                 if not requestingPlayer.game: return ... # can't start game that does not exist
                 if not requestingPlayer.game.is_host: return ... # cannot start game if not the host

@@ -1,0 +1,92 @@
+[
+    {
+        "name": "exploring the desert",
+        "advances": [
+            "engineering",
+            "universal doctrine",
+            "deism",
+            "urbanism"
+        ],
+        "destroy": false
+    },
+    {
+        "name": "coin and commerce",
+        "advances": [
+            "cartography",
+            "law",
+            "coinage",
+            "music"
+        ],
+        "destroy":false
+    },
+    {
+        "name": "mystical palaces",
+        "advances": [
+            "diplomacy",
+            "literacy",
+            "theocracy",
+            "mythology"
+        ],
+        "destroy": false
+    },
+    {
+        "name": "conquering the sea",
+        "advances": [
+            "naval warfare",
+            "literacy",
+            "astro\u00ADnavigation",
+            "written record"
+        ],
+        "destroy": false
+    },
+    {
+        "name": "sacred constructors",
+        "advances": [
+            "enlighten\u00ADment",
+            "engineering",
+            "theocracy",
+            "empiricism"
+        ],
+        "destroy":false
+    },
+    {
+        "name": "early merchants",
+        "advances": [
+            "trade routes",
+            "calendar",
+            "monarchy",
+            "cloth making"
+        ],
+        "destroy":false
+    },
+    {
+        "name": "spreading knowledge",
+        "advances": [
+            "medicine",
+            "enlighten\u00ADment",
+            "astro\u00ADnavigation",
+            "pottery"
+        ],
+        "destroy": true
+    },
+    {
+        "name": "emerging empire",
+        "advances": [
+            "military",
+            "literacy",
+            "metal working",
+            "mysticism"
+        ],
+        "destroy": true
+    },
+    {
+        "name": "cultural heights",
+        "advances": [
+            "architecture",
+            "law",
+            "drama and poetry",
+            "masonry"
+        ],
+        "destroy": true
+    }
+]

@@ -3,6 +3,8 @@ import axios from "axios";
 
 const capitalize = (string) => {if (!string?.toString()) {return ''}; return string.toString().charAt(0).toUpperCase() + string.toString().slice(1)};
 
+const title = (string) => {if (!string.toString()) return ''; return string.toString().split(' ').map(capitalize).join(' ')}
+
 const NewGame = (state, token, cd, player, game, civilizations, advCards, setState, setToken, setCD, setPlayer, setGame, setCivilizations, setAdvCards, usernames, setUsernames, setHistory) => {
 
 
@@ -97,11 +99,31 @@ const NewGame = (state, token, cd, player, game, civilizations, advCards, setSta
                 :null}
             </select></td>)};
 
+        const renderPresetRow = () => {
+
+            return (<td><option className={playerForRow.destroy? 'text-danger': ''}>{title(playerForRow.preset)}</option></td>)
+        }
+
         return(<tr key={key}>
             <td>{capitalize(playerForRow.username)}</td>
             {(serverIsHost || playerForRow.id===player.id)? renderCivCell(playerForRow): <td style={{backgroundColor: game? game.players.filter(player=>player.id===playerForRow.id).map(player=>player.color? player.color: null): null}}>{capitalize(playerForRow.civ)}</td>}
-            {serverIsHost? <td><input className="form-check-input" type="checkbox"/></td>: null}
+            {renderPresetRow(playerForRow)}
         </tr>)};
+
+    const renderPresetHeader = () => {
+        const handlePresetClick = () => {
+            axios.post('/api/gameaction', {token: token, playerId: player.id, type: 'preset'})
+            .then(response=>setGame(response.data.game));
+        };
+        return (
+            serverIsHost? 
+            <button 
+            type="button" 
+            className="btn btn-sm btn-secondary" 
+            onClick={handlePresetClick}>Preset</button>:
+            <>Preset</>
+        )
+    }
 
     // showingGame? console.log(game.host): null;
 
@@ -163,7 +185,7 @@ const NewGame = (state, token, cd, player, game, civilizations, advCards, setSta
             {/* username / civilization / ready? */}
             {showingGame? 
             <table className="table border border-dark">
-                <thead><tr><th scope="col">Username</th><th scope="col">Civilization</th>{serverIsHost? <th scope="col">Kick</th>: null}</tr></thead>
+                <thead><tr><th scope="col">Username</th><th scope="col">Civilization</th><th>{renderPresetHeader()}</th></tr></thead>
                 <tbody>{game.players.filter((playerA, playerB)=>playerA.name > playerB.name? 1 : -1).map((player, key)=>renderTableRow(player, key))}</tbody>
             </table>
             :null}   

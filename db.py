@@ -3,6 +3,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship,
 from typing import Any, Protocol, List
 from exception import PlayerNotAutherizedError, GamePlayersNotReady, IvalidRequestError, GameInProgressError
 from collections import Counter
+from itertools import cycle
 from jwt import decode
 import os
 from json import load
@@ -297,6 +298,8 @@ class GamePlayer(Base):
     selection_ready:Mapped[bool] = mapped_column(Boolean, default=False)
     has_purchased:Mapped[bool] = mapped_column(Boolean, default=False)
     score_offset:Mapped[int] = mapped_column(Integer, default=0)
+    preset:Mapped[str] = mapped_column(String, default='Unassigned')
+    destroy:Mapped[Boolean] = mapped_column(Boolean, default=False)
 
     transactions_from:Mapped[List[TradeCardTransactionStatus]] = relationship('TradeCardTransactionStatus', cascade='all, delete-orphan')
 
@@ -351,7 +354,9 @@ class GamePlayer(Base):
             'score': self.score,
             'hasPurchased': self.has_purchased,
             'canAdvance': self.can_advance,
-            'selectionReady': self.selection_ready
+            'selectionReady': self.selection_ready,
+            'preset': self.preset,
+            'destroy': self.destroy
         }
         if parent=='player': return {**json(self.game_info, parent='player'), 'isHost':self.player_info.hosted_game == self.game_info} if self.game_info else None
         return {
@@ -373,7 +378,9 @@ class GamePlayer(Base):
             'cities': self.cities,
             'census': self.census,
             'has': [json(card.trade_card) for card in self.has],
-            'wants': [json(card.trade_card) for card in self.wants]
+            'wants': [json(card.trade_card) for card in self.wants],
+            'preset': self.preset,
+            'destroy': self.destroy
         }
 
     def __repr__(self) -> str: return f'{self.player_info}\'s info for {self.game_info}'
@@ -674,6 +681,23 @@ class Game(Base):
             incoming[card.trade_card.level].append(card) if card.trade_card.qualifier != 'non-tradable' else None
         [rnd_shuffle(_incoming) for _incoming in incoming]
         [[filter(lambda deck: deck.level==level, self.decks).__next__().cards.extend(_incoming)] for level, _incoming in enumerate(incoming)]
+
+    def assignPreset(self, session:Session):
+        with open('assets/presets.json', 'r') as presets_file:
+            presets_cards = cycle(load(presets_file))
+        players = self.players.copy()
+        rnd_shuffle(players)
+        for player, preset in zip(players, presets_cards):
+            print('player: ', player.player_info.username)
+            print('preset name: ', preset['name'])
+            player.preset = preset['name']
+            player.destroy = bool(preset['destroy'])
+            [player.player_info.remove_card(session, card.adv_card_id) for card in player.adv_cards]
+            for adv_card in preset['advances']:
+                print('advacnement: ', adv_card)
+                card:AdvCard = get_or_create(session, AdvCard, get_only=True, name=adv_card)
+                player.player_info.select_card(session, card.id)
+            player.player_info.add_cards(session)
 
     @property
     def game_is_ending(self): 

@@ -5,7 +5,7 @@ import { CheckSquare, PlusSquare, StopBtn, BarChartLine, SkipEndBtn, XCircle, Bo
 import Trade from "./Trade";
 
 const capitalize = (str) => str? str.charAt(0).toUpperCase() + str.slice(1): str;
-const title = (str) => str.split(' ').map(capitalize).join(' ')
+const title = (str) => str?.toString? str.split(' ').map(capitalize).join(' '): '';
 const sentance = (str) => str?.split('. ')?.map(capitalize).join('. ') || capitalize(str);
 
 const PlayGame = (state, token, cd, player, game, civilizations, advCards, setState, setToken, setCD, setPlayer, setGame, setCivilizations, setAdvCards, history, setHistory, rules, calamities) => {
@@ -503,7 +503,9 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
         };
 
         return (<div className="col-12">
-            <h5>{capitalize(viewingPlayer.username)}</h5>
+            <div className="col-4 m-auto">
+                <h5 className="as-tooltip">{capitalize(viewingPlayer.username)}<span className={'tooltiptext ' + (state.viewingPlayer?.destroy? 'text-danger': '')}>{title(state.viewingPlayer?.preset)}</span></h5>
+            </div>
             <div className="d-flex justify-content-between align-items-center m-0 p-0 pb-2 border-bottom border-dark mx-n2">
                 <span className="ms-2">
                     <button type="button" className="btn btn-small btn-dark p-1 m-0 me-1" onClick={()=>setState({...state, viewingMode: 'browser', viewingPlayer: state.viewingPlayer})}>
@@ -643,14 +645,13 @@ const PlayGame = (state, token, cd, player, game, civilizations, advCards, setSt
         <div className="row d-flex justify-content-between mt-3 align-items-center">
             <div className="col-3 d-flex flex-no-wrap justify-content-start">
                 {state.viewingMode!=='board'? 
-                // back to scoreboard
                 <button className="btn btn-dark btn-sm p-1" onClick={() => setState({...state, viewingPlayer: null, viewingMode: 'board'})}>
                     <Backspace width={25} height={25}/>
                 </button>:
-                // leave/delete game
+                isServerHost?
                 <button className="btn btn-dark btn-sm p-1" onClick={handleLeaveOrDelete}>
                     <XCircle width={25} height={25}/>
-                </button>}
+                </button>: null}
             </div>
             {/* title */}
             <h3 className="col-6">Play Civilization</h3>
