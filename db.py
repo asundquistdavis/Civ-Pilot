@@ -724,11 +724,17 @@ class Game(Base):
     
     def __repr__(self) -> str: return f'{self.host}\'s game'
 
+
+
 Base.metadata.create_all(engine)
 with Session(engine) as session:
     with open('assets/tradecards.json', 'r') as trade_file:
         trade_cards = load(trade_file)['tradeCards']
         TradeCard.create_all(session, trade_cards)
     with open('assets/advancements.json', 'r') as adv_file:
-        advancement_cards = load(adv_file)['advancements']
-        AdvCard.create_all(session, advancement_cards)
+        # advancement_cards = load(adv_file)['advancements']
+        # AdvCard.create_all(session, advancement_cards)
+        [session.delete(card) for card in AdvCard.CreditTo.all]
+        [session.delete(card) for card in AdvCard.Credits.all]
+        [session.delete(card) for card in AdvCard.all]
+        session.commit()
