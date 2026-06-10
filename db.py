@@ -739,7 +739,7 @@ with Session(engine) as session:
         # [session.delete(card) for card in AdvCard.Credits.all]
         for card in AdvCard.all(session):
             if card.id == 8:
-                # card.credits.orange = 5
-                print(card.credits)
+                card.credits.orange = 5
+                # print(card.credits)
         # [print(card.id==8, card.name) for card in AdvCard.all(session)]
         session.commit()
