@@ -194,6 +194,9 @@ class AdvCard(Base):
         yellow:Mapped[int] = mapped_column(Integer)
         orange:Mapped[int] = mapped_column(Integer)
 
+        def __repr__(self):
+            return str(self.__json__())
+
         def __json__(self, parent:str=None)->dict: 
             data = {
                 'red': self.red,
@@ -203,8 +206,6 @@ class AdvCard(Base):
                 'orange': self.orange
             }
             return data
-        
-        def __repr__(self)->str:return 'credits'
 
     __tablename__ = 'advcard'
     # card specific properties
@@ -734,7 +735,11 @@ with Session(engine) as session:
     with open('assets/advancements.json', 'r') as adv_file:
         # advancement_cards = load(adv_file)['advancements']
         # AdvCard.create_all(session, advancement_cards)
-        [session.delete(card) for card in AdvCard.CreditTo.all]
-        [session.delete(card) for card in AdvCard.Credits.all]
-        [session.delete(card) for card in AdvCard.all]
+        # [session.delete(card) for card in AdvCard.CreditTo.all]
+        # [session.delete(card) for card in AdvCard.Credits.all]
+        for card in AdvCard.all(session):
+            if card.id == 8:
+                # card.credits.orange = 5
+                print(card.credits)
+        # [print(card.id==8, card.name) for card in AdvCard.all(session)]
         session.commit()
